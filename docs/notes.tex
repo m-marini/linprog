@@ -1,0 +1,52 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+\title{Linear programming notes}
+\author{Marco Marini}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+This document contains notes about Linear programming.
+\end{abstract}
+
+\section{Supply chain model}
+
+Let be define a simplified supply chain model as a system
+that produces products with a chain of product transformations performed by producers.
+
+Let be
+	\[ A = a_1 \dots a_n \]
+the set of producer types and
+	\[ B = b_1 \dots b_n \]
+the set of product types.
+
+For each producer type $ i $ let be
+	\[ N_i , \;i \in A\]
+the number of producers of that type.
+
+The system is constrained by some rules:
+\begin{enumerate}
+	\item the producer can perform only transformations
+	matching the producer type.
+	\item the producer can perform only a single
+	transformation for the its duration.
+\end{enumerate}
+
+For each product $ i $ let define the production rule
+\[ R_i = (P_i, V_i, Q_i, T_i, C_{i,i}) \]
+with
+\begin{itemize}
+	\item the producer,
+	\item the value of product
+	\item the quantity of outcome in duration interval
+	\item the duration interval
+	\item the quantity of product $ j $ consumed to produce the product $ i $  in duration interval.
+\end{itemize}
+
+\end{document}

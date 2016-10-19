@@ -39,6 +39,10 @@ import scalax.io.Codec
 import scalax.io.Resource
 
 case class SupplyChainModel(rules: Map[String, Rule], producers: Map[String, Double]) {
+
+  def computeOutcomes(config: Map[(String, String), Double]): Set[Outcome] = {
+    Set()
+  }
 }
 
 object SupplyChainModel {

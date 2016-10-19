@@ -41,6 +41,50 @@ import net.jcazevedo.moultingyaml.deserializationError
 import net.jcazevedo.moultingyaml.`package`.DeserializationException
 
 class SupplyChainModelTest extends PropSpec with PropertyChecks with Matchers {
+  property("supply chain outcomes") {
+    val MaxInterval = 10
+
+    forAll(
+      (Gen.choose(0.0, 1.0), "usage"),
+      (Gen.choose(1.0, 10.0), "producer"),
+      (Gen.choose(1.0, 10.0), "quantity"),
+      (Gen.choose(0.0, 10.0), "value"),
+      (Gen.choose(1.0, 10.0), "consumption"),
+      (Gen.choose(1, MaxInterval), "interval")) {
+        (usage, producer, quantity, value, consumption, interval) =>
+          whenever(consumption < quantity) {
+            val text = s"""
+producers:
+  campo: $producer
+rules:
+  grano:
+    value: $value
+    quantity: $quantity
+    interval: $interval secs
+    consumptions:
+      grano: $consumption
+    producer: campo
+"""
+
+            val chain = SupplyChainModel(text.parseYaml)
+
+            val config = Map(("campo", "grano") -> usage)
+
+            val workload = chain.computeOutcomes(config)
+
+            workload should have size 1
+
+            workload.head should have('name("grano"))
+
+            workload.head should have('quantityFlow(
+              quantity * producer * usage / interval))
+
+            workload.head should have('valueFlow(
+              value * quantity * producer * usage / interval))
+          }
+      }
+  }
+
   property("valid supply chain model") {
     val text = """
 producers:
