@@ -1,0 +1,108 @@
+producers:
+  campo: 10
+  mangimificio: 2
+  gallina: 18
+  mucca: 15
+  maiale: 10
+  pecora: 10
+
+rules:
+  grano:
+    value: 3.6
+    quantity: 2
+    interval: 2 min
+    consumptions:
+      grano: 1
+    producer: campo
+  
+  mais:
+    value: 7.2
+    quantity: 0
+    interval: 5 min
+    consumptions:
+      mais: 1
+    producer: campo
+  
+  soia:
+    value: 0
+    quantity: 0
+    interval: 0 secs
+    consumptions:
+      soia: 1
+    producer: campo
+  
+  carote:
+    value: 0
+    quantity: 0
+    interval: 0 secs
+    consumptions:
+      carote: 1
+    producer: campo
+  
+  mangime galline:
+    value: 0
+    quantity: 3
+    interval: 4 min
+    consumptions:
+      grano: 2
+      mais: 1
+    producer: mangimificio
+  
+  mangime mucca:
+    value: 0
+    quantity: 3
+    interval: 10 min
+    consumptions:
+      soia: 2
+      mais: 1
+    producer: mangimificio
+  
+  mangime maiale:
+    value: 0
+    quantity: 3
+    interval: 20 min
+    consumptions:
+      soia: 0
+      carote: 1
+    producer: mangimificio
+  
+  mangime pecora:
+    value: 0
+    quantity: 3
+    interval: 0 secs
+    consumptions:
+      grano: 3
+      soia: 1
+    producer: mangimificio
+  
+  uova:
+    value: 18
+    quantity: 1
+    interval: 0 secs
+    consumptions:
+      mangime galline: 1
+    producer: gallina
+  
+  latte:
+    value: 0
+    quantity: 1
+    interval: 0 secs
+    consumptions:
+      mangime mucca: 1
+    producer: mucca
+  
+  pancetta:
+    value: 0
+    quantity: 1
+    interval: 4 hours
+    consumptions:
+      mangime maiale: 1
+    producer: maiale
+  
+  lana:
+    value: 0
+    quantity: 1
+    interval: 6 hours
+    consumptions:
+      mangime pecora: 1
+    producer: pecora
