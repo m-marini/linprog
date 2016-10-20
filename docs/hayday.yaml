@@ -17,30 +17,30 @@ rules:
   
   mais:
     value: 7.2
-    quantity: 0
+    quantity: 2
     interval: 5 min
     consumptions:
       mais: 1
     producer: campo
   
   soia:
-    value: 0
-    quantity: 0
-    interval: 0 secs
+    value: 10.8
+    quantity: 2
+    interval: 20 min
     consumptions:
       soia: 1
     producer: campo
   
   carote:
-    value: 0
-    quantity: 0
-    interval: 0 secs
+    value: 7.2
+    quantity: 2
+    interval: 10 min
     consumptions:
       carote: 1
     producer: campo
   
   mangime galline:
-    value: 0
+    value: 7.2
     quantity: 3
     interval: 4 min
     consumptions:
@@ -78,21 +78,21 @@ rules:
   uova:
     value: 18
     quantity: 1
-    interval: 0 secs
+    interval: 10 min
     consumptions:
       mangime galline: 1
     producer: gallina
   
   latte:
-    value: 0
+    value: 32.4
     quantity: 1
-    interval: 0 secs
+    interval: 60 min
     consumptions:
       mangime mucca: 1
     producer: mucca
   
   pancetta:
-    value: 0
+    value: 50.4
     quantity: 1
     interval: 4 hours
     consumptions:
@@ -100,7 +100,7 @@ rules:
     producer: maiale
   
   lana:
-    value: 0
+    value: 54
     quantity: 1
     interval: 6 hours
     consumptions:

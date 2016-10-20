@@ -69,9 +69,7 @@ producer: campo
             rule should have('value(3.6))
             rule should have('quantity(2))
             rule should have('time(2 minutes))
-            rule should have('productivity(2.0 / (2 * 60)))
             rule should have('producer("campo"))
-            rule.incomingFlow shouldBe (3.6 * 2.0 / (2.0 * 60)) +- 1e-3
 
             val consump = rule.consumptions
 

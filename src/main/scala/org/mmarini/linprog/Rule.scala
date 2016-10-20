@@ -36,59 +36,81 @@ import net.jcazevedo.moultingyaml.YamlObject
 import net.jcazevedo.moultingyaml.YamlString
 import net.jcazevedo.moultingyaml.deserializationError
 
+/**
+ * A rule which defines how to produce a product
+ *
+ *  @constructor create a rule with production paramters
+ *  @param name the product name
+ *  @param producer the producer name
+ *  @param value the product value
+ *  @param quantity the produced quantity during a time interval
+ *  @param time the time interval of slot production
+ *  @param consumptions the quantities of products consumed to produce the named product
+ *
+ *  @author us00852
+ */
 case class Rule(
-    name: String,
-    producer: String,
-    value: Double,
-    quantity: Double,
-    time: Duration,
-    consumptions: Map[String, Double]) {
+  name: String,
+  producer: String,
+  value: Double,
+  quantity: Double,
+  time: Duration,
+  consumptions: Map[String, Double])
 
-  val productivity: Double = quantity / time.toSeconds
-
-  val incomingFlow: Double = productivity * value
-}
-
+/** Factory for [[Rule]] instances. */
 object Rule {
+
+  /** Creates a Rule by parsing a Yaml AST object */
   def apply(name: String, yaml: YamlObject): Rule =
     new RuleBuilder(name, yaml).build
 }
 
+/**
+ * A builder of rule from Yaml AST object
+ * @param name the name of product
+ * @param yaml the Yaml AST object
+ */
 class RuleBuilder(name: String, yaml: YamlObject) {
 
+  /** Builds the rule */
   def build: Rule =
     Rule(
       name = name,
       producer = producer,
       value = value,
-      quantity = qty,
-      time = elaps,
+      quantity = quantity,
+      time = interval,
       consumptions = consumptions)
 
+  /** Extracts the producer name from yaml */
   private def producer = yaml.fields.get(YamlString("producer")) match {
     case Some(YamlString(x)) => x
     case None => deserializationError(s"missing producer for product $name")
     case _ => deserializationError(s"wrong producer type for product $name")
   }
 
+  /** Extracts the product value from yaml */
   private def value = yaml.fields.get(YamlString("value")) match {
     case Some(YamlNumber(x: Number)) => x.doubleValue()
     case None => deserializationError(s"missing value for product $name")
     case _ => deserializationError(s"wrong value type for product $name")
   }
 
-  private def qty = yaml.fields.get(YamlString("quantity")) match {
+  /** Extracts the product quantity from yaml */
+  private def quantity = yaml.fields.get(YamlString("quantity")) match {
     case Some(YamlNumber(x: Number)) => x.doubleValue()
     case None => deserializationError(s"missing quantity for product $name")
     case _ => deserializationError(s"wrong quantity type for product $name")
   }
 
-  private def elaps = yaml.fields.get(YamlString("interval")) match {
+  /** Extracts the product interval from yaml */
+  private def interval = yaml.fields.get(YamlString("interval")) match {
     case Some(YamlString(x)) => Duration(x)
     case None => deserializationError(s"missing interval for product $name")
     case _ => deserializationError(s"wrong interval type for product $name")
   }
 
+  /** Extracts the product consumptions from yaml */
   private def consumptions = {
     val consumptionsYaml = yaml.fields.get(YamlString("consumptions")) match {
       case Some(YamlObject(x)) => x

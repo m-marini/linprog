@@ -29,58 +29,80 @@
 
 package org.mmarini.linprog
 
-import scala.concurrent.duration.DurationInt
+import scala.annotation.migration
 
 import org.scalacheck.Gen
 import org.scalatest.Matchers
+import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.PropSpec
 import org.scalatest.prop.PropertyChecks
 
+import net.jcazevedo.moultingyaml.DeserializationException
 import net.jcazevedo.moultingyaml.PimpedString
-import net.jcazevedo.moultingyaml.deserializationError
-import net.jcazevedo.moultingyaml.`package`.DeserializationException
+import scala.concurrent.duration._
 
 class SupplyChainModelTest extends PropSpec with PropertyChecks with Matchers {
+  val Nanos = 1e-9
+  val MaxInterval = 10
+
   property("supply chain outcomes") {
-    val MaxInterval = 10
+
+    def rule(name: String): Gen[Rule] =
+      for {
+        quantity <- Gen.choose(1.0, 10.0)
+        value <- Gen.choose(0.0, 10.0)
+        interval <- Gen.choose(1, MaxInterval)
+      } yield Rule(
+        name = name,
+        producer = "campo",
+        quantity = quantity,
+        value = value,
+        time = interval seconds,
+        consumptions = Map())
 
     forAll(
-      (Gen.choose(0.0, 1.0), "usage"),
-      (Gen.choose(1.0, 10.0), "producer"),
-      (Gen.choose(1.0, 10.0), "quantity"),
-      (Gen.choose(0.0, 10.0), "value"),
-      (Gen.choose(1.0, 10.0), "consumption"),
-      (Gen.choose(1, MaxInterval), "interval")) {
-        (usage, producer, quantity, value, consumption, interval) =>
-          whenever(consumption < quantity) {
-            val text = s"""
-producers:
-  campo: $producer
-rules:
-  grano:
-    value: $value
-    quantity: $quantity
-    interval: $interval secs
-    consumptions:
-      grano: $consumption
-    producer: campo
-"""
+      (rule("grano"), "grano"),
+      (rule("mais"), "mais"),
 
-            val chain = SupplyChainModel(text.parseYaml)
+      (Gen.choose(0.0, 1.0), "granoUsage"),
+      (Gen.choose(0.0, 1.0), "maisUsage"),
+      (Gen.choose(1.0, 10.0), "campoProducers")) {
+        (grano, mais, granoUsage, maisUsage, campoProducers) =>
+          {
+            val rules = Map(
+              "grano" -> grano,
+              "mais" -> mais)
 
-            val config = Map(("campo", "grano") -> usage)
+            val producers = Map("campo" -> campoProducers)
 
-            val workload = chain.computeOutcomes(config)
+            val chain = SupplyChainModel(rules, producers)
 
-            workload should have size 1
+            val config = Map(
+              ("campo", "grano") -> granoUsage,
+              ("campo", "mais") -> maisUsage)
 
-            workload.head should have('name("grano"))
+            val map = chain.computeOutcomes(config)
 
-            workload.head should have('quantityFlow(
-              quantity * producer * usage / interval))
+            map should have size 2
 
-            workload.head should have('valueFlow(
-              value * quantity * producer * usage / interval))
+            val granoOutcome = map.get("grano")
+
+            granoOutcome.value should have('name("grano"))
+
+            val interval = (granoUsage * grano.time + maisUsage * mais.time).toNanos * Nanos
+
+            granoOutcome.value.quantityFlow shouldBe (campoProducers * grano.quantity * granoUsage / interval) +- 1e-6
+
+            granoOutcome.value.valueFlow shouldBe (grano.value * campoProducers * grano.quantity * granoUsage / interval) +- 1e-6
+
+            val maisOutcome = map.get("mais")
+
+            maisOutcome.value should have('name("mais"))
+
+            maisOutcome.value.quantityFlow shouldBe (campoProducers * mais.quantity * maisUsage / interval) +- 1e-6
+
+            maisOutcome.value.valueFlow shouldBe (mais.value * campoProducers * mais.quantity * maisUsage / interval) +- 1e-6
+
           }
       }
   }

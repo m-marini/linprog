@@ -29,6 +29,10 @@
 
 package org.mmarini.linprog
 
+import scala.annotation.migration
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.DurationInt
+
 import net.jcazevedo.moultingyaml.PimpedString
 import net.jcazevedo.moultingyaml.YamlNumber
 import net.jcazevedo.moultingyaml.YamlObject
@@ -40,8 +44,33 @@ import scalax.io.Resource
 
 case class SupplyChainModel(rules: Map[String, Rule], producers: Map[String, Double]) {
 
-  def computeOutcomes(config: Map[(String, String), Double]): Set[Outcome] = {
-    Set()
+  def computeOutcomes(config: Map[(String, String), Double]): Map[String, Outcome] = {
+    // Computes total producer time
+    val producerUsage = for {
+      (producerName, _) <- producers
+    } yield {
+      val times = for {
+        rule <- rules.values
+        if (rule.producer == producerName)
+      } yield {
+        val y = config.getOrElse((producerName, rule.name), 0.0)
+        rule.time * y
+      }
+      val totTime = times.reduce((a, b) => a + b)
+      (producerName, totTime)
+    }
+    val o = for {
+      product <- rules.values
+    } yield {
+      val producer = product.producer
+      val y = config.getOrElse((producer, product.name), 0.0)
+      val interval = producerUsage(producer).toNanos * 1e-9
+      val quantityFlow = producers(producer) * product.quantity *
+        y / interval
+      val valueFlow = quantityFlow * product.value
+      Outcome(product.name, quantityFlow, valueFlow)
+    }
+    o map { case x => x.name -> x } toMap
   }
 }
 

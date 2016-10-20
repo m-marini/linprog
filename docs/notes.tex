@@ -17,18 +17,15 @@ This document contains notes about Linear programming.
 
 \section{Supply chain model}
 
-Let be define a simplified supply chain model as a system
+We define a simplified supply chain model as a system
 that produces products with a chain of product transformations performed by producers.
 
 Let be
-	\[ A = a_1 \dots a_n \]
-the set of producer types and
-	\[ B = b_1 \dots b_n \]
-the set of product types.
-
-For each producer type $ i $ let be
-	\[ N_i , \;i \in A\]
-the number of producers of that type.
+\begin{description}
+	\item [$ A = a_1 \dots a_n $] the set of producer types
+	\item [$ B = b_1 \dots b_n $] the set of product types.
+	\item [$  N_i , \;i \in A $] the number of producers of type $ i $.
+\end{description}
 
 The system is constrained by some rules:
 \begin{enumerate}
@@ -41,12 +38,69 @@ The system is constrained by some rules:
 For each product $ i $ let define the production rule
 \[ R_i = (P_i, V_i, Q_i, T_i, C_{i,i}) \]
 with
-\begin{itemize}
-	\item the producer,
-	\item the value of product
-	\item the quantity of outcome in duration interval
-	\item the duration interval
-	\item the quantity of product $ j $ consumed to produce the product $ i $  in duration interval.
-\end{itemize}
+\begin{description}
+	\item[$ P_i \in A $ ] the producer
+	\item[$ V_i $ ] the value of product
+	\item[$ Q_i $ ] the quantity of outcome in duration interval
+	\item[$ T_i $ ] the duration interval
+	\item[$ C_{i,j} $ ] the quantity of product $ j $ consumed to produce the product $ i $  in duration interval.
+\end{description}
+
+\subsection{Production indicators}
+
+By now we do not consider the constraint on the availability of consuming products. It will be considered later.
+
+When a producer of type $ i $ is ready to produce we assign a production slot for the product $ j $ such that
+\begin{description}
+	\item[ $ Y_{ij} $ ] is the weighted distribution
+\end{description}
+
+Obviously the distribution of product not produceable by the producer is zero:
+\begin{equation}
+	\label{equ:distribution}
+	Y_{ij} = 0, \forall j \; | \; P_j \ne i
+\end{equation}
+
+The total time of usage of the producer is
+\begin{equation}
+	Z_i = \sum_{j \in B} Y_{ij} T_j
+\end{equation}
+
+During this interval the producer $ i $ produces the product $ j $ for the perid
+	\[ Y_{ij} T_j \]
+
+The produced quantity is
+	\[ Q_j Y_{ij} \]
+	
+The production frequency of product $ j $ for all producers of type $ P_i $ is
+\begin{equation}
+	\label{equ:prodFreq}
+	F_i = N_j Q_i \frac{Y_{ji}}{Z_j}, \; j = P_i
+\end{equation}
+
+The production value flow of product $ j $ is 
+\begin{equation}
+	I_i = V_i F_i
+\end{equation}
+
+\subsection{Constraints}
+
+Il grafo di produzione è un grafo orientato dove
+ogni nodo rappresenta un prodotto e ogni arco la dipendenza tra prodotti consumati e prodotto generato.
+
+Come calcoliamo la produzione totale dei beni considerando le diverse velocità di produzione dei beni?
+
+Dalla (\ref{equ:prodFreq}) sappiamo con che frequenza viene generato un prodotto.
+
+Possiamo quindi calcolare con che frequenza un prodotto viene consumato
+\begin{equation}
+	E_i = \sum_{j \in B} F_j \frac{C_{ji}}{Q_j}
+\end{equation}
+
+Questa frequenza deve essere ovviamente inferiore alla frequenza di produzione quindi
+
+\begin{equation}
+	E_i \le F_i
+\end{equation}
 
 \end{document}
