@@ -2,6 +2,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
+\usepackage{verbatim}
 
 \title{Linear programming notes}
 \author{Marco Marini}
@@ -18,89 +19,140 @@ This document contains notes about Linear programming.
 \section{Supply chain model}
 
 We define a simplified supply chain model as a system
-that produces products with a chain of product transformations performed by producers.
+that produces products with a chain of product transformations performed by suppliers.
 
 Let be
 \begin{description}
-	\item [$ A = a_1 \dots a_n $] the set of producer types
-	\item [$ B = b_1 \dots b_n $] the set of product types.
-	\item [$  N_i , \;i \in A $] the number of producers of type $ i $.
+	\item [$ A = a_1 \dots a_n $]
+		the set of supplier types
+	\item [$ B = b_1 \dots b_n $]
+		the set of product types.
+	\item [$  N_i , \;i \in A $]
+		the number of suppliers of type $ i $.
 \end{description}
 
-The system is constrained by some rules:
-\begin{enumerate}
-	\item the producer can perform only transformations
-	matching the producer type.
-	\item the producer can perform only a single
-	transformation for the its duration.
-\end{enumerate}
+The supplier can perform only a single transformation for the its duration.
 
-For each product $ i $ let define the production rule
-\[ R_i = (P_i, V_i, Q_i, T_i, C_{i,i}) \]
-with
+Let us define
 \begin{description}
-	\item[$ P_i \in A $ ] the producer
-	\item[$ V_i $ ] the value of product
-	\item[$ Q_i $ ] the quantity of outcome in duration interval
-	\item[$ T_i $ ] the duration interval
-	\item[$ C_{i,j} $ ] the quantity of product $ j $ consumed to produce the product $ i $  in duration interval.
+	\item[ $ N_{i} $ ]
+		the number of suppliers $ i \in A $
+	\item[ $ V_{i} $ ]
+		the value of product $ i \in B $
+	\item[ $ Q_{ij} $ ]
+		the quantity of produced product $ j \in B  $ for supplier $ i \in A, j $ in production interval
+	\item[ $ T_{ij}, i \in A, j \in B $ ]
+		the production interval for product $ j \in B  $ in supplier $ i \in A, j $
+	\item[$ C_{ijk} $ ]
+		the quantity of product $ k \in B $ consumed to produce the product $ j \in Bj $ in production interval of supplier $ i \in A $.
 \end{description}
 
-\subsection{Production indicators}
+\subsection{Production}
 
 By now we do not consider the constraint on the availability of consuming products. It will be considered later.
 
-When a producer of type $ i $ is ready to produce we assign a production slot for the product $ j $ such that
+When a supplier of type $ i $ is ready to produce we assign a production slot for the product $ j $ such that
 \begin{description}
-	\item[ $ Y_{ij} $ ] is the weighted distribution
+	\item[ $ Y_{ij} $ ] is the weighted distribution of slots
 \end{description}
 
-Obviously the distribution of product not produceable by the producer is zero:
+The value $ Y_{ij} $ is constrained to 
 \begin{equation}
-	\label{equ:distribution}
-	Y_{ij} = 0, \forall j \; | \; P_j \ne i
+\label{equ:YConstraints}
+	0 \le Y_{ij} \le 1
 \end{equation}
 
-The total time of usage of the producer is
+Moreover we may put the supplier in idle state for a while
+\begin{description}
+	\item[$ Z_{i0} $]
+		is the idle time during a whole production cycle
+\end{description}
+with
 \begin{equation}
-	Z_i = \sum_{j \in B} Y_{ij} T_j
+\label{equ:ZConstraints}
+	Z_{i0} \ge 0
 \end{equation}
 
-During this interval the producer $ i $ produces the product $ j $ for the perid
-	\[ Y_{ij} T_j \]
 
-The produced quantity is
-	\[ Q_j Y_{ij} \]
-	
-The production frequency of product $ j $ for all producers of type $ P_i $ is
+The total time of production cycle for supplier $ i $ is
+	\[ Z_i = \sum_{j \in B} Y_{ij} T_{ij} + Z_{i0} \]
+
+Let normalize the total time production to 1
 \begin{equation}
-	\label{equ:prodFreq}
-	F_i = N_j Q_i \frac{Y_{ji}}{Z_j}, \; j = P_i
+\label{equ:normalInterval}
+	Z_i = \sum_{j \in B} Y_{ij} T_{ij} + Z_{i0} = 1
 \end{equation}
 
-The production value flow of product $ j $ is 
+During this interval all the suppliers $ i $ produce the product $ j $ at a slot rate
 \begin{equation}
-	I_i = V_i F_i
+\label{equ:prodFreq}
+\left.
+	S_{ij} =  N_i \frac{Y_{ij}}{Z_i} = N_i Y_{ij}
+\right| _{i \in A, j \in B}
 \end{equation}
+
+The production rate of product $ j $ for supplier $ i $ is
+\[
+\left.
+	P_{ij} =  Q_{ij} S_{ij} = N_i Q_{ij} Y_{ij}
+\right| _{i \in A, j \in B}
+\]
+
+While the production rate of product $ j $ is
+	\[ P_{j \in B} = \sum_{i \in A,} P_{ij} \]
 
 \subsection{Constraints}
 
-Il grafo di produzione è un grafo orientato dove
-ogni nodo rappresenta un prodotto e ogni arco la dipendenza tra prodotti consumati e prodotto generato.
+The (\ref{equ:prodFreq}) expresses the slot rate of a product for specific suppliers.
 
-Come calcoliamo la produzione totale dei beni considerando le diverse velocità di produzione dei beni?
+Therefore we can calculate the consumption rate of a product $k$ to produce product $ j $ for suppliers $ i $
+\[
+\left.
+	E_{ijk}  = C_{ijk} S_{ij}
+\right| _{i \in A, j,k \in B}
+\]
 
-Dalla (\ref{equ:prodFreq}) sappiamo con che frequenza viene generato un prodotto.
+Then the total consumption rate for product $ k $ is
+	\[ E_{k} = \sum_{i \in A, j \in B} E_{ijk} \]
 
-Possiamo quindi calcolare con che frequenza un prodotto viene consumato
+If
+	\[ E_i < P_i \]
+the product s produced at a higher rate then it is consumped creating a surplus that can be sold.
+
+On the other hane we cannot have 
+	\[ E_i > P_i \]
+because it cannot consume more product than the produced.
+
+So the system must satisfy the constraint
 \begin{equation}
-	E_i = \sum_{j \in B} F_j \frac{C_{ji}}{Q_j}
+\label{equ:consumptionConstraint}
+	P_i - E_i \ge 0
+\end{equation}
+	
+\subsection{Value rate}
+We can compute the value rate for the whole supply chain
+\begin{equation}
+\label{equ:valueRate}
+	V = \sum_{i \in B}( P_i - E_i ) V_i
 \end{equation}
 
-Questa frequenza deve essere ovviamente inferiore alla frequenza di produzione quindi
-
-\begin{equation}
-	E_i \le F_i
-\end{equation}
+The problem is to find the optimal production configuration that maximize the value rate. This is defined by the linear system composed by
+(\ref{equ:YConstraints}),
+(\ref{equ:ZConstraints}),
+(\ref{equ:normalInterval}),
+(\ref{equ:consumptionConstraint}),
+(\ref{equ:valueRate})
+\[
+\left\{
+\begin{array}{ll}
+	\max_{(Y_{ij}, Z_{i0})} (V) & , i \in A, j \in B \\
+	\sum_{j \in B} Y_{ij} T_{ij} + Z_{i0} = 1 & , i \in A \\
+	Z_{i0} \ge 0 & , i \in A \\
+	Y_{ij} \ge 0 & , i \in A, j \in B \\
+	Y_{ij} \le 1 & , i \in A, j \in B \\
+	P_i - E_i \ge 0 & , i \in B
+\end{array}
+\right.
+\]
 
 \end{document}
