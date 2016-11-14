@@ -27,23 +27,21 @@ Let be
 		the set of supplier types
 	\item [$ B = b_1 \dots b_m $]
 		the set of product types.
-	\item [$  N_i , \;i \in A $]
-		the number of suppliers of type $ i $.
 \end{description}
 
 The supplier can perform only a single transformation for the its duration.
 
 Let us define
 \begin{description}
-	\item[ $ N_{i} $ ]
-		the number of suppliers $ i \in A $
-	\item[ $ V_{i} $ ]
-		the value of product $ i \in B $
-	\item[ $ Q_{ij} $ ]
+	\item [$ n_i $]
+		the number of suppliers of type $ i \in A $.
+	\item[ $ v_{i} $ ]
+	the value of product $ i \in B $
+	\item[ $ q_{ij} $ ]
 		the quantity of produced product $ j \in B  $ for supplier $ i \in A, j $ in production interval
-	\item[ $ T_{ij}, i \in A, j \in B $ ]
+	\item[ $ t_{ij}, i \in A, j \in B $ ]
 		the production interval for product $ j \in B  $ in supplier $ i \in A, j $
-	\item[$ C_{ijk} $ ]
+	\item[$ c_{ijk} $ ]
 		the quantity of product $ k \in B $ consumed to produce the product $ j \in Bj $ in production interval of supplier $ i \in A $.
 \end{description}
 
@@ -53,53 +51,58 @@ By now we do not consider the constraint on the availability of consuming produc
 
 When a supplier of type $ i $ is ready to produce we assign a production slot for the product $ j $ such that
 \begin{description}
-	\item[ $ Y_{ij} $ ] is the weighted distribution of slots
+	\item[ $ y_{ij} $ ] is the weighted distribution of slots
 \end{description}
 
-The value $ Y_{ij} $ is constrained to 
+The value $ y_{ij} $ is constrained to 
 \begin{equation}
 \label{equ:YConstraints}
-	0 \le Y_{ij} \le 1
+	0 \le y_{ij} \le 1
 \end{equation}
 
 Moreover we may put the supplier in idle state for a while
 \begin{description}
-	\item[$ Z_{i0} $]
+	\item[$ z_{i0} $]
 		is the idle time during a whole production cycle
 \end{description}
 with
 \begin{equation}
 \label{equ:ZConstraints}
-	Z_{i0} \ge 0
+	z_{i0} \ge 0
 \end{equation}
 
 
 The total time of production cycle for supplier $ i $ is
-	\[ Z_i = \sum_{j \in B} Y_{ij} T_{ij} + Z_{i0} \]
+	\[ z_i = \sum_{j \in B} y_{ij} t_{ij} + z_{i0} \]
 
 Let normalize the total time production to 1
 \begin{equation}
 \label{equ:normalInterval}
-	Z_i = \sum_{j \in B} Y_{ij} T_{ij} + Z_{i0} = 1
+	z_i = \sum_{j \in B} y_{ij} t_{ij} + z_{i0} = 1
 \end{equation}
 
 During this interval all the suppliers $ i $ produce the product $ j $ at a slot rate
 \begin{equation}
 \label{equ:prodFreq}
 \left.
-	S_{ij} =  N_i \frac{Y_{ij}}{Z_i} = N_i Y_{ij}
+	s_{ij} =  n_i \frac{y_{ij}}{z_i} = n_i y_{ij}
 \right| _{i \in A, j \in B}
 \end{equation}
 
 The production rate of product $ j $ for supplier $ i $ is
 \[
 \left.
-	P_{ij} =  Q_{ij} S_{ij} = N_i Q_{ij} Y_{ij}
+	p_{ij} = q_{ij} s_{ij} = n_i q_{ij} y_{ij}
 \right| _{i \in A, j \in B}
 \]
 
 While the production rate of product $ j $ is
-	\[ P_{j \in B} = \sum_{i \in A,} P_{ij} \]
+\begin{equation}
+\label{equ:prodRate}
+	p_{j \in B} = \sum_{i \in A,} p_{ij} = 
+		\sum_{i \in A,} n_i q_{ij} y_{ij}
+\end{equation}
+
 
 \subsection{Constraints}
 
@@ -108,32 +111,36 @@ The (\ref{equ:prodFreq}) expresses the slot rate of a product for specific suppl
 Therefore we can calculate the consumption rate of a product $k$ to produce product $ j $ for suppliers $ i $
 \[
 \left.
-	E_{ijk}  = C_{ijk} S_{ij}
+	e_{ijk}  = c_{ijk} s_{ij}
 \right| _{i \in A, j,k \in B}
 \]
 
 Then the total consumption rate for product $ k $ is
-	\[ E_{k} = \sum_{i \in A, j \in B} E_{ijk} \]
+\begin{equation}
+\label{equ:consumRate}
+	e_{k} = \sum_{i \in A, j \in B} e_{ijk}
+	= \sum_{i \in A, j \in B} n_i c_{ijk} y_{ij}
+\end{equation}
 
 If
-	\[ E_i < P_i \]
+	\[ e_i < p_i \]
 the product s produced at a higher rate then it is consumped creating a surplus that can be sold.
 
 On the other hane we cannot have 
-	\[ E_i > P_i \]
+	\[ e_i > p_i \]
 because it cannot consume more product than the produced.
 
 So the system must satisfy the constraint
 \begin{equation}
 \label{equ:consumptionConstraint}
-	P_i - E_i \ge 0
+	p_i - e_i \ge 0
 \end{equation}
 	
 \subsection{Value rate}
 We can compute the value rate for the whole supply chain
 \begin{equation}
 \label{equ:valueRate}
-	V = \sum_{i \in B}( P_i - E_i ) V_i
+	v = \sum_{i \in B}( p_i - e_i ) v_i
 \end{equation}
 
 The problem is to find the optimal production configuration that maximize the value rate. This is defined by the linear system composed by
@@ -145,17 +152,191 @@ The problem is to find the optimal production configuration that maximize the va
 \[
 \left\{
 \begin{array}{ll}
-	\max_{(Y_{ij}, Z_{i0})} (V) & , i \in A, j \in B \\
-	\sum_{j \in B} Y_{ij} T_{ij} + Z_{i0} = 1 & , i \in A \\
-	Z_{i0} \ge 0 & , i \in A \\
-	Y_{ij} \ge 0 & , i \in A, j \in B \\
-	Y_{ij} \le 1 & , i \in A, j \in B \\
-	P_i - E_i \ge 0 & , i \in B
+	\max_{(y_{ij}, z_{i0})} (v) & , i \in A, j \in B \\
+	\sum_{j \in B} y_{ij} t_{ij} + z_{i0} = 1 & , i \in A \\
+	z_{i0} \ge 0 & , i \in A \\
+	y_{ij} \ge 0 & , i \in A, j \in B \\
+	y_{ij} \le 1 & , i \in A, j \in B \\
+	p_i - e_i \ge 0 & , i \in B
 \end{array}
 \right.
 \]
 
 \subsection{Tensor form}
+
+Trasformiamo ora la (\ref{equ:prodRate}) in forma tensoriale:
+\[
+	P_i = A_{ijk} Y_{kj} = A Y
+\]
+che deve essere equivalente a
+\begin{equation}
+\label{equ:p_j}
+	p_{j'} = \sum_{i'} n_{i'} q_{i'j'} y_{i'j'}
+\end{equation}
+da cui
+\begin{equation}
+\label{equ:Aijk}
+\begin{array}{ll}
+	A_{iik} = n_k q_{ki} \\
+	A_{ijk} = 0 &, i \ne j
+\end{array}
+\end{equation}
+
+Se poniamo
+\[
+\begin{array}{ll}
+	Q_{ij} = q_{ij} \\
+	N_{ii} = n_i \\
+	N_{ij} = 0, i \ne j
+\end{array}
+\]
+possiamo scrivere
+\[
+	B_{ij} = N_{ik} Q_{kj} = N Q = n_{i} q_{ij}
+\]
+quindi
+\[
+\begin{array}{ll}
+	A_{iik} = B_{ki}\\
+	A_{ijk} = 0, i \ne j
+\end{array}
+\]
+
+Poniamo
+\begin{equation}
+\label{equ:NQI}
+	A_{ijk} = \delta_{ijl} B_{kl} = \delta B^T = B \delta =
+		N Q \delta = N_{il} Q_{lm} \delta_{mjk}
+\end{equation}
+dove
+\[
+\begin{array}{ll}
+	\delta_{ijl} = 1 & , i = j = l \\
+	\delta_{ijl} = 0
+\end{array}
+\]
+quindi
+\[
+	P_i = N Q \delta Y
+\]
+
+Allo stesso modo trasformiamo la (\ref{equ:consumRate})
+\[
+	E_i = M_{ijk} Y_{kj} = M Y
+\]
+che deve essere equivalente a
+\begin{equation}
+\label{equ:e_k}
+	e_{k'} = \sum_{i', j'} n_{i'} c_{i'j'k'} y_{i'j'}
+\end{equation}
+da cui
+\begin{equation}
+\label{equ:Mijk}
+	M_{ijk} = n_k c_{kji} = N_{kl} C_{lji} = (NC)^T = C^T N^T = C^T N
+\end{equation}
+dove
+\[
+	C^T = (C^T)_{ijk} = C_{kji}
+\]
+quindi
+\[
+	E_i = C^T N Y
+\]
+
+Abbiamo poi la (\ref{equ:valueRate})
+\[
+	v = V_i (P_i - E_i)
+	= V \left( N Q \delta - C^T N \right) Y
+\]
+
+Infine la (\ref{equ:normalInterval}) diventa
+
+\begin{equation}
+	\sum_j t_{ij} * y_{ij} + z_{i0} = T_{ij} Y{ij} + Z_i = T Y^T + Z = \vec{1}
+\end{equation}
+
+
+\subsubsection{Verifiche}
+
+Verifica (\ref{equ:Aijk})
+
+\[
+\begin{array}{ll}
+P_1 = A_{111}Y_{11} + A_{112}Y_{21} +
+A_{121}Y_{12} + A_{122}Y_{22} \\
+P_2 = A_{211}Y_{11} + A_{212}Y_{21} +
+A_{221}Y_{12} + A_{222}Y_{22} \\
+
+A_{111} = n_1 q_{11} \\
+A_{112} = n_2 q_{21} \\
+A_{121} = 0 \\
+A_{122} = 0 \\
+A_{211} = 0 \\
+A_{212} = 0 \\
+A_{221} = n_1 q_{12} \\
+A_{222} = n_2 q_{22} \\
+
+P_1 = n_1 q_{11}Y_{11} + n_2 q_{21}Y_{21} \\
+P_2 = n_1 q_{12}Y_{12} + n_2 q_{22}Y_{22} \\
+\end{array}
+\]
+equivalente alla (\ref{equ:p_j})
+\[
+\begin{array}{ll}
+p_1 = n_1 q_{11} y_{11} + n_2 q_{21} y_{21} \\
+p_2 = n_1 q_{12} y_{12} + n_2 q_{22} y_{22}
+\end{array}
+\]
+cvd.
+
+
+Verifica (\ref{equ:NQI})
+\[
+\begin{array}{ll}
+A_{ijk} = \delta_{ijl} B_{lk}
+= \delta_{ijl} N_{km} Q_{ml} \\
+
+A_{111} = \delta_{111} N_{11} Q_{11} + 
+\delta_{111} N_{12} Q_{21}
+\delta_{112} N_{11} Q_{12} + 
+\delta_{112} N_{12} Q_{22} =
+N_{11} Q_{11} \\
+A_{112} = \delta_{111} N_{21} Q_{11} + 
+\delta_{111} N_{22} Q_{21}
+\delta_{112} N_{21} Q_{12} + 
+\delta_{112} N_{22} Q_{22} =
+N_{22} Q_{21} \\
+A_{121} = \delta_{121} N_{11} Q_{11} + 
+\delta_{121} N_{12} Q_{21}
+\delta_{122} N_{11} Q_{12} + 
+\delta_{122} N_{12} Q_{22} = 0 \\
+A_{122} = \delta_{121} N_{21} Q_{11} + 
+\delta_{121} N_{22} Q_{21}
+\delta_{122} N_{21} Q_{12} + 
+\delta_{122} N_{22} Q_{22} = 0 \\
+A_{211} = \delta_{211} N_{11} Q_{11} + 
+\delta_{211} N_{12} Q_{21}
+\delta_{212} N_{11} Q_{12} + 
+\delta_{212} N_{12} Q_{22} = 0 \\
+A_{212} = \delta_{211} N_{21} Q_{11} + 
+\delta_{211} N_{22} Q_{21}
+\delta_{212} N_{21} Q_{12} + 
+\delta_{212} N_{22} Q_{22} = 0 \\
+A_{221} = \delta_{221} N_{11} Q_{11} + 
+\delta_{221} N_{12} Q_{21}
+\delta_{222} N_{11} Q_{12} + 
+\delta_{222} N_{12} Q_{22} =
+N_{11} Q_{12} \\
+A_{222} = \delta_{221} N_{21} Q_{11} + 
+\delta_{221} N_{22} Q_{21}
+\delta_{222} N_{21} Q_{12} + 
+\delta_{222} N_{22} Q_{22} =
+N_{22} Q_{22}
+\end{array}
+\]
+equivalente alla (\ref{equ:Aijk}), cvd.
+
+\subsection{Altro}
 
 Let us normalize the problem such that
 \[
@@ -170,8 +351,15 @@ Let us normalize the problem such that
 \]
 so
 \[
-	\min (-V) = 
-	\min (-\sum_{i \in B}( P_i - E_i ) V_i) = 
+\left\{
+\begin{array}{ll}
+	\min (-v) = -V \left( N Q \delta - C^T N \right) Y \\
+	T Y^T + Z = \vec{1} \\
+	-V \left( N Q \delta - C^T N \right) Y \le \vec{0} \\
+	Y \ge 0 \\
+	Z \ge 0
+\end{array}
+\right.
 \]
 
 
