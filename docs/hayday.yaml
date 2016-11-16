@@ -39,7 +39,7 @@ rules:
       carote: 1
     producer: campo
   
-  mangime galline:
+  mangime_galline:
     value: 7.2
     quantity: 3
     interval: 4 min
@@ -48,7 +48,7 @@ rules:
       mais: 1
     producer: mangimificio
   
-  mangime mucca:
+  mangime_mucca:
     value: 0
     quantity: 3
     interval: 10 min
@@ -57,7 +57,7 @@ rules:
       mais: 1
     producer: mangimificio
   
-  mangime maiale:
+  mangime_maiale:
     value: 0
     quantity: 3
     interval: 20 min
@@ -66,7 +66,7 @@ rules:
       carote: 1
     producer: mangimificio
   
-  mangime pecora:
+  mangime_pecora:
     value: 0
     quantity: 3
     interval: 0 secs
@@ -80,7 +80,7 @@ rules:
     quantity: 1
     interval: 10 min
     consumptions:
-      mangime galline: 1
+      mangime_galline: 1
     producer: gallina
   
   latte:
@@ -88,7 +88,7 @@ rules:
     quantity: 1
     interval: 60 min
     consumptions:
-      mangime mucca: 1
+      mangime_mucca: 1
     producer: mucca
   
   pancetta:
@@ -96,7 +96,7 @@ rules:
     quantity: 1
     interval: 4 hours
     consumptions:
-      mangime maiale: 1
+      mangime_maiale: 1
     producer: maiale
   
   lana:
@@ -104,5 +104,5 @@ rules:
     quantity: 1
     interval: 6 hours
     consumptions:
-      mangime pecora: 1
+      mangime_pecora: 1
     producer: pecora

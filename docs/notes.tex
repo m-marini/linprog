@@ -251,8 +251,32 @@ Abbiamo poi la (\ref{equ:valueRate})
 
 Infine la (\ref{equ:normalInterval}) diventa
 
+\[
+	E_i = U_{ijk} Y_{kj} - Z_i
+\]
+che deve essere qeuivalente a
+\[
+	e_i = \sum_j t_{ij} * y_{ij} -z_{i0}
+\]
+ovvero
+\[
+\begin{array}{ll}
+	U_{iji} = t_{ji} \\
+	U_{ijk} = 0 &, i \ne k
+\end{array}
+\]
+
+\[
+\begin{array}{ll}
+	U_{ijk}	= \delta_{ilk} T_{lj}
+			= \delta_{ikl} T_{lj} \\
+	V_{ijk}	= \delta_{ijl} T_{lk} = \delta T \\
+	U_{ijk} = V_{ikj} = \delta_{ikl} T_{lj} \\
+\end{array}
+\]
+
 \begin{equation}
-	\sum_j t_{ij} * y_{ij} + z_{i0} = T_{ij} Y{ij} + Z_i = T Y^T + Z = \vec{1}
+	\sum_j t_{ij} * y_{ij} + z_{i0} = U_{ijk} Y{kl} + Z_i = U Y + Z = \vec{1}
 \end{equation}
 
 
@@ -354,14 +378,12 @@ so
 \left\{
 \begin{array}{ll}
 	\min (-v) = -V \left( N Q \delta - C^T N \right) Y \\
-	T Y^T + Z = \vec{1} \\
+	U Y + Z = \vec{1} \\
 	-V \left( N Q \delta - C^T N \right) Y \le \vec{0} \\
 	Y \ge 0 \\
 	Z \ge 0
 \end{array}
 \right.
 \]
-
-
 
 \end{document}
