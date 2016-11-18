@@ -1,0 +1,28 @@
+producers:
+  campo: 10
+  mangimificio: 2
+
+rules:
+  grano:
+    value: 1
+    quantity: 2
+    interval: 1 secs
+    consumptions:
+      grano: 1
+    producer: campo
+  
+  mangime_galline:
+    value: 2
+    quantity: 2
+    interval: 3 secs
+    consumptions:
+      grano: 2
+    producer: mangimificio
+  
+  mangime_mucca:
+    value: 3
+    quantity: 1
+    interval: 2 secs
+    consumptions:
+      grano: 1
+    producer: mangimificio

@@ -86,46 +86,60 @@ noSuppliers = 2;""")
 supplier_campo = 1;
 supplier_mangimificio = 2;""")
 
+            toOctave.supplierNamesDefs should include("""
+# Supplier names
+supplierNames = {
+"campo",
+"mangimificio"
+};""")
+
             toOctave.productIndexes should include("""
 # Product indexes
 product_grano = 1;
 product_mangime = 2;""")
 
+            toOctave.productNamesDefs should include("""
+# Product names
+productNames = {
+"grano",
+"mangime"
+};""")
+
             toOctave.supplierByProduct should include("""
 # Supplier by product
-S = zeros(noProducts, 1);
-S(product_grano) = supplier_campo;
-S(product_mangime) = supplier_mangimificio;""")
+s = zeros(noProducts, 1);
+s(product_grano) = supplier_campo;
+s(product_mangime) = supplier_mangimificio;""")
 
             toOctave.noSuppliers should include("""
 # No of suppliers
-N = zeros(noSuppliers, 1);
-N(supplier_campo) = 10.0;
-N(supplier_mangimificio) = 2.0;""")
+n = zeros(noSuppliers, 1);
+n(supplier_campo) = 10.0;
+n(supplier_mangimificio) = 2.0;""")
 
             toOctave.quantities should include("""
 # Quantity of products by supplier
-Q = zeros(noProducts, 1);
-Q(product_grano) = 2.0;
-Q(product_mangime) = 1.0;""")
+q = zeros(noProducts, 1);
+q(product_grano) = 2.0;
+q(product_mangime) = 1.0;""")
 
             toOctave.values should include("""
 # Value of products
-V = zeros(noProducts, 1);
-V(product_grano) = 3.6;
-V(product_mangime) = 5.0;""")
+v = zeros(noProducts, 1);
+v(product_grano) = 3.6;
+v(product_mangime) = 5.0;""")
 
             toOctave.consumptions should include("""
 # Consumptions of product by product
-C = zeros(noProducts, noProducts);
-C(product_grano, product_grano) = 1.0;
-C(product_mangime, product_grano) = 1.0;""")
+D = zeros(noProducts, noProducts);
+D(product_grano, product_grano) = 1.0;
+D(product_mangime, product_grano) = 1.0;""")
 
             toOctave.intervals should include("""
 # Interval for product by supplier
-T = zeros(noProducts, 1);
-T(product_grano) = 300;
-T(product_mangime) = 3600;""")
+t = zeros(noProducts, 1);
+t(product_grano) = 300;
+t(product_mangime) = 3600;""")
 
             toOctave.toString should include("""
 noProducts = 2;
@@ -135,39 +149,51 @@ noSuppliers = 2;
 supplier_campo = 1;
 supplier_mangimificio = 2;
 
+# Supplier names
+supplierNames = {
+"campo",
+"mangimificio"
+};
+
 # Product indexes
 product_grano = 1;
 product_mangime = 2;
 
+# Product names
+productNames = {
+"grano",
+"mangime"
+};
+
 # Supplier by product
-S = zeros(noProducts, 1);
-S(product_grano) = supplier_campo;
-S(product_mangime) = supplier_mangimificio;
+s = zeros(noProducts, 1);
+s(product_grano) = supplier_campo;
+s(product_mangime) = supplier_mangimificio;
 
 # No of suppliers
-N = zeros(noSuppliers, 1);
-N(supplier_campo) = 10.0;
-N(supplier_mangimificio) = 2.0;
+n = zeros(noSuppliers, 1);
+n(supplier_campo) = 10.0;
+n(supplier_mangimificio) = 2.0;
 
 # Quantity of products by supplier
-Q = zeros(noProducts, 1);
-Q(product_grano) = 2.0;
-Q(product_mangime) = 1.0;
+q = zeros(noProducts, 1);
+q(product_grano) = 2.0;
+q(product_mangime) = 1.0;
 
 # Value of products
-V = zeros(noProducts, 1);
-V(product_grano) = 3.6;
-V(product_mangime) = 5.0;
+v = zeros(noProducts, 1);
+v(product_grano) = 3.6;
+v(product_mangime) = 5.0;
 
 # Interval for product by supplier
-T = zeros(noProducts, 1);
-T(product_grano) = 300;
-T(product_mangime) = 3600;
+t = zeros(noProducts, 1);
+t(product_grano) = 300;
+t(product_mangime) = 3600;
 
 # Consumptions of product by product
-C = zeros(noProducts, noProducts);
-C(product_grano, product_grano) = 1.0;
-C(product_mangime, product_grano) = 1.0;
+D = zeros(noProducts, noProducts);
+D(product_grano, product_grano) = 1.0;
+D(product_mangime, product_grano) = 1.0;
 """)
           }
       }

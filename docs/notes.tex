@@ -57,7 +57,7 @@ When a supplier of type $ i $ is ready to produce we assign a production slot fo
 The value $ y_{ij} $ is constrained to 
 \begin{equation}
 \label{equ:YConstraints}
-	0 \le y_{ij} \le 1
+	y_{ij} \ge 0
 \end{equation}
 
 Moreover we may put the supplier in idle state for a while
@@ -154,10 +154,9 @@ The problem is to find the optimal production configuration that maximize the va
 \begin{array}{ll}
 	\max_{(y_{ij}, z_{i0})} (v) & , i \in A, j \in B \\
 	\sum_{j \in B} y_{ij} t_{ij} + z_{i0} = 1 & , i \in A \\
-	z_{i0} \ge 0 & , i \in A \\
+	p_i - e_i \ge 0 & , i \in B \\
 	y_{ij} \ge 0 & , i \in A, j \in B \\
-	y_{ij} \le 1 & , i \in A, j \in B \\
-	p_i - e_i \ge 0 & , i \in B
+	z_{i0} \ge 0 & , i \in A
 \end{array}
 \right.
 \]

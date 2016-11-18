@@ -2,55 +2,53 @@ clear all;
 
 hayday1;
 
-# Flusso di ricavi per produttore, prodotto
-REVENUES = zeros(noSuppliers, noProducts);
+Theta = zeros(noSuppliers, noProducts);
 for i = 1 : noProducts
-  j = S(i); 
-  REVENUES(j, i) = N(j) * Q(i) * V(i);
+  Theta(s(i), i) = 1;
 endfor
 
-# Flusso di spese per produttore, prodotto
-EXPENSES = zeros(noSuppliers, noProducts);
-for i = 1 : noProducts
-  j = S(i);
-  EXPENSES(j, i) = N(j) * C(i, :) * V;
-endfor
+Q = diag(q);
+N = diag(n(s));
+T = diag(t);
 
-LOSS = EXPENSES - REVENUES;
+# Flusso effettivo di produzione
+F = zeros(noProducts, noProducts);
+F = (Q - D') * N;
 
-c = [LOSS(:); zeros(noSuppliers, 1)];
+# Flusso dei profitti
+g = zeros(noProducts, 1);
+g = N' * (Q' - D) * v;
 
-noWeights = noSuppliers * noProducts;
-noVars = noWeights + noSuppliers;
-noConstraints = noSuppliers + noWeights + 1;
+# Tempo totale
+U = zeros(noSuppliers, noProducts);
+U = Theta * T;
 
-Z0 = ones(1, noSuppliers);
+noVars = noProducts + noSuppliers;
+c = zeros(noVars, 1);
+c = [-g; zeros(noSuppliers, 1)];
+
+noConstraints = noSuppliers + noProducts;
 A = zeros(noConstraints, noVars);
-for i = 1 : noSuppliers
-  Z = zeros(noSuppliers, noProducts);
-  for j = 1: noProducts
-    if  i == S(j)
-      Z(i, j) = T(j);
-    endif
-  endfor
-  A(i, :) = [Z(:)' Z0];
-endfor
+# Vincolo sul tempo di produzione dei produttori
+A(1 : noSuppliers, :) = [U eye(noSuppliers)];
+# Vincolo sul flusso di produzione reale dei prodotti
+A(noSuppliers + 1 : noSuppliers + noProducts, :) = [F zeros(noProducts, noSuppliers)];
 
-A(noSuppliers + 1 : end - 1, :) = [eye(noWeights) zeros(noWeights, noSuppliers)];
-
-A(end,:)  = [LOSS(:)' zeros(1, noSuppliers)];
-
-b = ones(noConstraints, 1);
-b(end) = 0;
+b = [ ones(noSuppliers, 1); zeros(noProducts, 1)];
 
 ctype = blanks(noConstraints);
 ctype(1 : noSuppliers) = "S";
-ctype(noSuppliers + 1 : end) = "U";
+ctype(noSuppliers + 1 : noSuppliers + noProducts) = "L";
 
 lb = zeros(noVars, 1);
 ub = [];
 
-X = glpk(c , A , b , lb , ub , ctype);
+x = glpk(c , A , b , lb , ub , ctype);
 
-Y = reshape(X(1 : noWeights), noSuppliers, noProducts);
-Z0 = X(noWeights + 1 : end);
+w = x(1 : noProducts);
+z = x(noProducts + 1 : end)
+
+W = Theta .* w';
+Prob = W ./ (sum(W, 2) + z)
+
+-c' * x
