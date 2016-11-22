@@ -1,4 +1,2 @@
-/*.log
-/*.aux
-/*.synctex.gz
-/*.toc
+/.settings/
+/target/
