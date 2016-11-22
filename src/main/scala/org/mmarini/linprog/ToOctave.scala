@@ -28,9 +28,17 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 package org.mmarini.linprog
 
-class ToOctave(model: SupplyChainModel) {
-  private val supplierNames = model.producers.keySet.toList.sorted
-  private val productNames = model.rules.keySet.toList.sorted
+class ToOctave(chain: Map[String, Product],
+    suppliers: Map[String, Double],
+    values: Map[String, Double]) {
+  private val productNames = chain.keySet.toList.sorted
+  private val supplierNames =
+    chain.
+      values.
+      map(_.producer).
+      toSet.
+      toList.
+      sorted
 
   /**
    * Convert the supply chain model to octave source
@@ -44,23 +52,23 @@ $productNamesDefs
 $supplierByProduct
 $noSuppliers
 $quantities
-$values
+$valuesDef
 $intervals
 $consumptions
 """
 
-  val counters = s"""
+  lazy val counters = s"""
 noProducts = ${productNames.length};
 noSuppliers = ${supplierNames.length};"""
 
-  val supplierIndexes = """
+  lazy val supplierIndexes = """
 # Supplier indexes
 """ +
     (for {
       (name, idx) <- supplierNames.zipWithIndex
     } yield s"supplier_$name = ${idx + 1};").mkString("\n")
 
-  val supplierNamesDefs = """
+  lazy val supplierNamesDefs = """
 # Supplier names
 supplierNames = {
 """ +
@@ -69,7 +77,7 @@ supplierNames = {
     } yield s""""$name"""").mkString(",\n") + """
 };"""
 
-  val productNamesDefs = """
+  lazy val productNamesDefs = """
 # Product names
 productNames = {
 """ +
@@ -78,54 +86,54 @@ productNames = {
     } yield s""""$name"""").mkString(",\n") + """
 };"""
 
-  val productIndexes: String = """
+  lazy val productIndexes: String = """
 # Product indexes
 """ +
     (for {
       (name, idx) <- productNames.zipWithIndex
     } yield s"product_$name = ${idx + 1};").mkString("\n")
 
-  val supplierByProduct = """
+  lazy val supplierByProduct = """
 # Supplier by product
 s = zeros(noProducts, 1);
 """ + (for {
     name <- productNames
-  } yield s"s(product_$name) = supplier_${model.rules(name).producer};").mkString("\n")
+  } yield s"s(product_$name) = supplier_${chain(name).producer};").mkString("\n")
 
-  val noSuppliers = """
+  lazy val noSuppliers = """
 # No of suppliers
 n = zeros(noSuppliers, 1);
 """ + (for {
     name <- supplierNames
-  } yield s"n(supplier_$name) = ${model.producers(name)};").mkString("\n")
+  } yield s"n(supplier_$name) = ${suppliers(name)};").mkString("\n")
 
-  val quantities = """
+  lazy val quantities = """
 # Quantity of products by supplier
 q = zeros(noProducts, 1);
 """ + (for {
     name <- productNames
-  } yield s"q(product_$name) = ${model.rules(name).quantity};").mkString("\n")
+  } yield s"q(product_$name) = ${chain(name).quantity};").mkString("\n")
 
-  val values = """
+  lazy val valuesDef = """
 # Value of products
 v = zeros(noProducts, 1);
 """ + (for {
     name <- productNames
-  } yield s"v(product_$name) = ${model.rules(name).value};").mkString("\n")
+  } yield s"v(product_$name) = ${values(name)};").mkString("\n")
 
-  val consumptions = """
+  lazy val consumptions = """
 # Consumptions of product by product
 D = zeros(noProducts, noProducts);
 """ + (for {
     name <- productNames
     consName <- productNames
-    qta <- model.rules(name).consumptions.get(consName)
+    qta <- chain(name).consumptions.get(consName)
   } yield s"D(product_$name, product_$consName) = $qta;").mkString("\n")
 
-  val intervals = """
+  lazy val intervals = """
 # Interval for product by supplier
 t = zeros(noProducts, 1);
 """ + (for {
     name <- productNames
-  } yield s"t(product_$name) = ${model.rules(name).time.toSeconds};").mkString("\n")
+  } yield s"t(product_$name) = ${chain(name).time.toSeconds};").mkString("\n")
 }

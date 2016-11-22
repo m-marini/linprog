@@ -29,52 +29,71 @@
 
 package org.mmarini.linprog
 
-import org.scalatest.Matchers
-import org.scalatest.prop.PropertyChecks
-import org.scalatest.PropSpec
+import scala.annotation.migration
+
 import org.scalacheck.Gen
+import org.scalatest.Matchers
+import org.scalatest.OptionValues.convertOptionToValuable
+import org.scalatest.PropSpec
+import org.scalatest.prop.PropertyChecks
+
+import net.jcazevedo.moultingyaml.DeserializationException
 import net.jcazevedo.moultingyaml.PimpedString
-import net.jcazevedo.moultingyaml.YamlObject
-import net.jcazevedo.moultingyaml.YamlString
-import net.jcazevedo.moultingyaml.deserializationError
-import scalax.file.Path
-import scalax.io.Codec
-import scalax.io.Resource
-import net.jcazevedo.moultingyaml.YamlArray
-import net.jcazevedo.moultingyaml.YamlNumber
 import scala.concurrent.duration._
-import scala.concurrent.duration.DurationInt
 
-class RuleTest extends PropSpec with PropertyChecks with Matchers {
+class SupplyChainTest extends PropSpec with PropertyChecks with Matchers {
+  val Nanos = 1e-9
+  val MaxInterval = 10
 
-  property("valid rule") {
+  property("valid product model") {
     val text = """
-value: 3.6
-quantity: 2
-interval: 2 min
-consumptions:
-  grano: 1
-producer: campo
+grano:
+  quantity: 2
+  interval: 2 min
+  consumptions:
+    grano: 1
+  producer: campo
 """
 
     forAll(
-      (Gen.const(text), "confFile")) {
+      (Gen.const(text), "text")) {
+        text =>
+          {
+            val chain = SupplyChain(text.parseYaml)
+
+            chain should have size 1
+          }
+      }
+  }
+
+  property("missing consumption supply chain model") {
+    val text = """
+grano:
+  value: 3.6
+  quantity: 2
+  interval: 2 min
+  consumptions:
+    acqua: 1
+  producer: campo
+"""
+
+    forAll(
+      (Gen.const(text), "text")) {
+        text =>
+          {
+            the[DeserializationException] thrownBy SupplyChain(text.parseYaml) should have message (
+              "Missing product acqua to produce grano")
+          }
+      }
+  }
+
+  property("file supply chain model") {
+    forAll(
+      (Gen.const("src/test/resources//hayday.yaml"), "confFile")) {
         confFile =>
           {
-            val confYaml = confFile.parseYaml.asYamlObject
-
-            val rule = Rule("grano", confYaml)
-
-            rule should have('name("grano"))
-            rule should have('value(3.6))
-            rule should have('quantity(2))
-            rule should have('time(2 minutes))
-            rule should have('producer("campo"))
-
-            val consump = rule.consumptions
-
-            consump should have size 1
-            consump should contain("grano" -> 1.0)
+            val chain = SupplyChain.load(confFile)
+            chain should have size 22
           }
       }
   }

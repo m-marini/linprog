@@ -29,30 +29,51 @@
 
 package org.mmarini.linprog
 
-import scalax.io.Resource
-import scalax.file.Path
-import com.typesafe.scalalogging.LazyLogging
+import scala.annotation.migration
 
-object ToOctaveApp extends App with LazyLogging {
-  require(args.length >= 4, "at least 4 arguments needed")
+import org.scalacheck.Gen
+import org.scalatest.Matchers
+import org.scalatest.OptionValues.convertOptionToValuable
+import org.scalatest.PropSpec
+import org.scalatest.prop.PropertyChecks
 
-  val chainFile = args(0)
-  val suppliersFile = args(1)
-  val valuesFile = args(2)
-  val outFile = args(3)
+import net.jcazevedo.moultingyaml.DeserializationException
+import net.jcazevedo.moultingyaml.PimpedString
+import scala.concurrent.duration._
 
-  logger.info(s"Reading")
-  logger.info(s" chain     $chainFile")
-  logger.info(s" suppliers $suppliersFile")
-  logger.info(s" values    $valuesFile")
+class ParametersTest extends PropSpec with PropertyChecks with Matchers {
 
-  val chain = SupplyChain.load(chainFile)
-  val suppliers = Parameters.load(suppliersFile)
-  val values = Parameters.load(valuesFile)
+  property("valid parameters") {
+    val text = """
+grano: 2
+mais: 3.4
+"""
 
-  logger.info(s"Writting $outFile ...")
+    forAll(
+      (Gen.const(text), "text")) {
+        text =>
+          {
+            val parms = Parameters(text.parseYaml)
 
-  Path.fromString(outFile).deleteIfExists()
-  Resource.fromFile(outFile).write(new ToOctave(chain, suppliers, values).toString)
-  logger.info(s"Completed")
+            parms should have size 2
+            parms should contain(("grano" -> 2.0))
+            parms should contain(("mais" -> 3.4))
+            parms("aaa") shouldBe 0.0
+          }
+      }
+  }
+
+  property("parameters file") {
+    forAll(
+      (Gen.const("src/test/resources//parameters.yaml"), "confFile")) {
+        confFile =>
+          {
+            val parms = Parameters.load(confFile)
+
+            parms should have size 2
+            parms should contain(("grano" -> 2.0))
+            parms should contain(("mais" -> 3.4))
+          }
+      }
+  }
 }

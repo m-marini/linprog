@@ -46,45 +46,87 @@ import scala.concurrent.duration._
 import scala.concurrent.duration.DurationInt
 
 class ToOctaveTest extends PropSpec with PropertyChecks with Matchers {
-
-  property("valid rule") {
-    val text = """
-producers:
-  campo: 10
-  mangimificio: 2
-rules:
-  grano:
-    value: 3.6
-    quantity: 2
-    interval: 5 min
-    consumptions:
-      grano: 1
-    producer: campo
-  mangime:
-    value: 5
-    quantity: 1
-    interval: 1 hours
-    consumptions:
-      grano: 1
-    producer: mangimificio
+  val suppliersText = """
+campo: 10
+mangimificio: 2
 """
 
-    forAll(
-      (Gen.const(text), "text")) {
-        text =>
-          {
-            val chain = SupplyChainModel(text.parseYaml)
+  val valuesText = """
+grano: 3.6
+mangime: 5
+"""
 
-            val toOctave = new ToOctave(chain)
+  val chainText = """
+grano:
+  quantity: 2
+  interval: 5 min
+  consumptions:
+    grano: 1
+  producer: campo
+mangime:
+  quantity: 1
+  interval: 1 hours
+  consumptions:
+    grano: 1
+  producer: mangimificio
+"""
+
+  property("counters") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.counters should include("""
 noProducts = 2;
 noSuppliers = 2;""")
+          }
+      }
+  }
+
+  property("supplierIndexes") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.supplierIndexes should include("""
 # Supplier indexes
 supplier_campo = 1;
 supplier_mangimificio = 2;""")
+          }
+      }
+  }
+
+  property("supplierNamesDefs") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.supplierNamesDefs should include("""
 # Supplier names
@@ -92,11 +134,45 @@ supplierNames = {
 "campo",
 "mangimificio"
 };""")
+          }
+      }
+  }
+
+  property("productIndexes") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.productIndexes should include("""
 # Product indexes
 product_grano = 1;
 product_mangime = 2;""")
+          }
+      }
+  }
+
+  property("productNamesDefs") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.productNamesDefs should include("""
 # Product names
@@ -104,6 +180,23 @@ productNames = {
 "grano",
 "mangime"
 };""")
+          }
+      }
+  }
+
+  property("supplierByProduct") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.supplierByProduct should include("""
 # Supplier by product
@@ -111,11 +204,47 @@ s = zeros(noProducts, 1);
 s(product_grano) = supplier_campo;
 s(product_mangime) = supplier_mangimificio;""")
 
+          }
+      }
+  }
+
+  property("noSuppliers") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
+
             toOctave.noSuppliers should include("""
 # No of suppliers
 n = zeros(noSuppliers, 1);
 n(supplier_campo) = 10.0;
 n(supplier_mangimificio) = 2.0;""")
+
+          }
+      }
+  }
+
+  property("quantities") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.quantities should include("""
 # Quantity of products by supplier
@@ -123,11 +252,47 @@ q = zeros(noProducts, 1);
 q(product_grano) = 2.0;
 q(product_mangime) = 1.0;""")
 
-            toOctave.values should include("""
+          }
+      }
+  }
+
+  property("valuesDef") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
+
+            toOctave.valuesDef should include("""
 # Value of products
 v = zeros(noProducts, 1);
 v(product_grano) = 3.6;
 v(product_mangime) = 5.0;""")
+
+          }
+      }
+  }
+
+  property("consumptions") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.consumptions should include("""
 # Consumptions of product by product
@@ -135,11 +300,46 @@ D = zeros(noProducts, noProducts);
 D(product_grano, product_grano) = 1.0;
 D(product_mangime, product_grano) = 1.0;""")
 
+          }
+      }
+  }
+
+  property("intervals") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
+
             toOctave.intervals should include("""
 # Interval for product by supplier
 t = zeros(noProducts, 1);
 t(product_grano) = 300;
 t(product_mangime) = 3600;""")
+          }
+      }
+  }
+
+  property("toString") {
+
+    forAll(
+      (Gen.const(suppliersText), "suppliersText"),
+      (Gen.const(valuesText), "valuesText"),
+      (Gen.const(chainText), "chainText")) {
+        (suppliersText, valuesText, chainText) =>
+          {
+            val suppliers = Parameters(suppliersText.parseYaml)
+            val values = Parameters(valuesText.parseYaml)
+            val chain = SupplyChain(chainText.parseYaml)
+
+            val toOctave = new ToOctave(chain, suppliers, values)
 
             toOctave.toString should include("""
 noProducts = 2;

@@ -29,7 +29,33 @@
 
 package org.mmarini.linprog
 
-case class Outcome(
-  name: String,
-  quantityFlow: Double,
-  valueFlow: Double)
+import net.jcazevedo.moultingyaml.YamlNumber
+import net.jcazevedo.moultingyaml.YamlObject
+import net.jcazevedo.moultingyaml.YamlString
+import net.jcazevedo.moultingyaml.YamlValue
+import net.jcazevedo.moultingyaml.deserializationError
+import net.jcazevedo.moultingyaml.PimpedString
+import scalax.io.Codec
+import scalax.io.Resource
+
+object Parameters {
+  def apply(yaml: YamlValue): Map[String, Double] = new ParmsBuilder(yaml).build
+
+  def load(filename: String): Map[String, Double] =
+    apply(Resource.fromFile(filename).string(Codec.UTF8).parseYaml)
+}
+
+class ParmsBuilder(yaml: YamlValue) {
+
+  def build: Map[String, Double] = {
+    val parmsYamlMap = yaml match {
+      case YamlObject(map) => map
+      case _ => deserializationError("wrong parameters object")
+    }
+    parmsYamlMap.map {
+      case (YamlString(key), YamlNumber(n: Number)) => (key, n.doubleValue())
+      case (key, _) => deserializationError(s"wrong value for $key")
+    }.withDefault { _ => 0.0 }
+  }
+}
+

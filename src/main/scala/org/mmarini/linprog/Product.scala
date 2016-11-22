@@ -35,49 +35,39 @@ import net.jcazevedo.moultingyaml.YamlNumber
 import net.jcazevedo.moultingyaml.YamlObject
 import net.jcazevedo.moultingyaml.YamlString
 import net.jcazevedo.moultingyaml.deserializationError
+import net.jcazevedo.moultingyaml.YamlArray
 
 /**
- * A rule which defines how to produce a product
+ * A product which defines how to be produced
  *
- *  @constructor create a rule with production paramters
+ *  @constructor create a rule with production parameters
  *  @param name the product name
  *  @param producer the producer name
- *  @param value the product value
  *  @param quantity the produced quantity during a time interval
  *  @param time the time interval of slot production
  *  @param consumptions the quantities of products consumed to produce the named product
  *
  *  @author us00852
  */
-case class Rule(
+case class Product(
   name: String,
   producer: String,
-  value: Double,
   quantity: Double,
   time: Duration,
   consumptions: Map[String, Double])
-
-/** Factory for [[Rule]] instances. */
-object Rule {
-
-  /** Creates a Rule by parsing a Yaml AST object */
-  def apply(name: String, yaml: YamlObject): Rule =
-    new RuleBuilder(name, yaml).build
-}
 
 /**
  * A builder of rule from Yaml AST object
  * @param name the name of product
  * @param yaml the Yaml AST object
  */
-class RuleBuilder(name: String, yaml: YamlObject) {
+class ProductBuilder(name: String, yaml: YamlObject) {
 
   /** Builds the rule */
-  def build: Rule =
-    Rule(
+  def build: Product =
+    Product(
       name = name,
       producer = producer,
-      value = value,
       quantity = quantity,
       time = interval,
       consumptions = consumptions)
@@ -87,13 +77,6 @@ class RuleBuilder(name: String, yaml: YamlObject) {
     case Some(YamlString(x)) => x
     case None => deserializationError(s"missing producer for product $name")
     case _ => deserializationError(s"wrong producer type for product $name")
-  }
-
-  /** Extracts the product value from yaml */
-  private def value = yaml.fields.get(YamlString("value")) match {
-    case Some(YamlNumber(x: Number)) => x.doubleValue()
-    case None => deserializationError(s"missing value for product $name")
-    case _ => deserializationError(s"wrong value type for product $name")
   }
 
   /** Extracts the product quantity from yaml */
