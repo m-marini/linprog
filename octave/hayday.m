@@ -52,3 +52,6 @@ W = Theta .* w';
 Prob = W ./ (sum(W, 2) + z)
 
 -c' * x
+
+# P temporale
+Theta*w;
