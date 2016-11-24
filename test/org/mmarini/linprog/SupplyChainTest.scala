@@ -29,43 +29,81 @@
 
 package org.mmarini.linprog
 
+import scala.annotation.migration
+
 import org.scalacheck.Gen
 import org.scalatest.Matchers
+import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.PropSpec
 import org.scalatest.prop.PropertyChecks
 
+import net.jcazevedo.moultingyaml.DeserializationException
 import net.jcazevedo.moultingyaml.PimpedString
-import net.jcazevedo.moultingyaml.YamlNumber
-import net.jcazevedo.moultingyaml.YamlObject
-import net.jcazevedo.moultingyaml.YamlString
-import net.jcazevedo.moultingyaml.deserializationError
-import scalax.io.Codec
-import scalax.io.Resource
+import scala.concurrent.duration._
 
-class ConfigTest extends PropSpec with PropertyChecks with Matchers {
-  property("config") {
+class SupplyChainTest extends PropSpec with PropertyChecks with Matchers {
+
+  property("valid product model") {
+    val text = """
+grano:
+  quantity: 2
+  interval: 2 min
+  consumptions:
+    grano: 1
+  producer: campo
+"""
+
     forAll(
-      (Gen.const("docs/hayday.yaml"), "confFile")) {
-        confFile =>
+      (Gen.const(text), "text")) {
+        text =>
           {
-            val confYaml = Resource.fromFile(confFile).string(Codec.UTF8).parseYaml
+            val chain = SupplyChain.fromYamlString(text)
 
-            confYaml shouldBe a[YamlObject]
-
-            val constraintsYaml = confYaml.asYamlObject.fields(YamlString("producers"))
-
-            constraintsYaml shouldBe a[YamlObject]
-
-            val constraints = constraintsYaml.asYamlObject.fields map {
-              case (YamlString(key), YamlNumber(value: Integer)) => (key -> value)
-              case _ => deserializationError(s"wrong type")
-            }
-
-            constraints should have size (6)
-
-            constraints should contain("campo" -> 10)
+            chain should have size 1
           }
       }
+  }
 
+  property("missing consumption supply chain model") {
+    val text = """
+grano:
+  value: 3.6
+  quantity: 2
+  interval: 2 min
+  consumptions:
+    acqua: 1
+  producer: campo
+"""
+
+    forAll(
+      (Gen.const(text), "text")) {
+        text =>
+          {
+            the[DeserializationException] thrownBy SupplyChain.fromYamlString(text) should have message (
+              "Missing product acqua to produce grano")
+          }
+      }
+  }
+
+  property("file supply chain model") {
+    forAll(
+      (Gen.const("test/resources/hayday.yaml"), "confFile")) {
+        confFile =>
+          {
+            val chain = SupplyChain.fromFile(confFile)
+            chain should have size 22
+          }
+      }
+  }
+
+  property("fromClasspath") {
+    forAll(
+      (Gen.const("/hayday.yaml"), "confFile")) {
+        confFile =>
+          {
+            val chain = SupplyChain.fromClasspath(confFile)
+            chain should have size 22
+          }
+      }
   }
 }

@@ -37,12 +37,22 @@ import net.jcazevedo.moultingyaml.deserializationError
 import net.jcazevedo.moultingyaml.PimpedString
 import scalax.io.Codec
 import scalax.io.Resource
+import scalax.io.InputResource
 
 object Parameters {
-  def apply(yaml: YamlValue): Map[String, Double] = new ParmsBuilder(yaml).build
+  def fromYaml(yaml: YamlValue): Map[String, Double] = new ParmsBuilder(yaml).build
 
-  def load(filename: String): Map[String, Double] =
-    apply(Resource.fromFile(filename).string(Codec.UTF8).parseYaml)
+  def fromYamlString(text: String): Map[String, Double] =
+    fromYaml(text.parseYaml)
+
+  def fromFile(filename: String): Map[String, Double] =
+    fromYamlString(Resource.fromFile(filename).string(Codec.UTF8))
+
+  def fromClasspath(name: String): Map[String, Double] = {
+    val stream = getClass.getResourceAsStream(name)
+    require(stream != null, s"Resource $name not found")
+    fromYamlString(Resource.fromInputStream(stream).string(Codec.UTF8))
+  }
 }
 
 class ParmsBuilder(yaml: YamlValue) {

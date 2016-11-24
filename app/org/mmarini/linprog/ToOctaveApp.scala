@@ -46,9 +46,9 @@ object ToOctaveApp extends App with LazyLogging {
   logger.info(s" suppliers $suppliersFile")
   logger.info(s" values    $valuesFile")
 
-  val chain = SupplyChain.load(chainFile)
-  val suppliers = Parameters.load(suppliersFile)
-  val values = Parameters.load(valuesFile)
+  val chain = SupplyChain.fromFile(chainFile)
+  val suppliers = Parameters.fromFile(suppliersFile)
+  val values = Parameters.fromFile(valuesFile)
 
   logger.info(s"Writting $outFile ...")
 

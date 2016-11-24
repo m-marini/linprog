@@ -79,9 +79,9 @@ mangime:
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -100,9 +100,9 @@ noSuppliers = 2;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -122,9 +122,9 @@ supplier_mangimificio = 2;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -146,9 +146,9 @@ supplierNames = {
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -168,9 +168,9 @@ product_mangime = 2;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -192,9 +192,9 @@ productNames = {
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -216,9 +216,9 @@ s(product_mangime) = supplier_mangimificio;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -240,9 +240,9 @@ n(supplier_mangimificio) = 2.0;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -264,9 +264,9 @@ q(product_mangime) = 1.0;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -288,9 +288,9 @@ v(product_mangime) = 5.0;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -312,9 +312,9 @@ D(product_mangime, product_grano) = 1.0;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 
@@ -335,9 +335,9 @@ t(product_mangime) = 3600;""")
       (Gen.const(chainText), "chainText")) {
         (suppliersText, valuesText, chainText) =>
           {
-            val suppliers = Parameters(suppliersText.parseYaml)
-            val values = Parameters(valuesText.parseYaml)
-            val chain = SupplyChain(chainText.parseYaml)
+            val suppliers = Parameters.fromYamlString(suppliersText)
+            val values = Parameters.fromYamlString(valuesText)
+            val chain = SupplyChain.fromYamlString(chainText)
 
             val toOctave = new ToOctave(chain, suppliers, values)
 

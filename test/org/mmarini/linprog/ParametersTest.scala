@@ -41,59 +41,52 @@ import net.jcazevedo.moultingyaml.DeserializationException
 import net.jcazevedo.moultingyaml.PimpedString
 import scala.concurrent.duration._
 
-class SupplyChainTest extends PropSpec with PropertyChecks with Matchers {
-  val Nanos = 1e-9
-  val MaxInterval = 10
+class ParametersTest extends PropSpec with PropertyChecks with Matchers {
 
-  property("valid product model") {
+  property("valid parameters") {
     val text = """
-grano:
-  quantity: 2
-  interval: 2 min
-  consumptions:
-    grano: 1
-  producer: campo
+grano: 2
+mais: 3.4
 """
 
     forAll(
       (Gen.const(text), "text")) {
         text =>
           {
-            val chain = SupplyChain(text.parseYaml)
+            val parms = Parameters.fromYamlString(text)
 
-            chain should have size 1
+            parms should have size 2
+            parms should contain(("grano" -> 2.0))
+            parms should contain(("mais" -> 3.4))
+            parms("aaa") shouldBe 0.0
           }
       }
   }
 
-  property("missing consumption supply chain model") {
-    val text = """
-grano:
-  value: 3.6
-  quantity: 2
-  interval: 2 min
-  consumptions:
-    acqua: 1
-  producer: campo
-"""
-
+  property("parameters file") {
     forAll(
-      (Gen.const(text), "text")) {
-        text =>
-          {
-            the[DeserializationException] thrownBy SupplyChain(text.parseYaml) should have message (
-              "Missing product acqua to produce grano")
-          }
-      }
-  }
-
-  property("file supply chain model") {
-    forAll(
-      (Gen.const("src/test/resources//hayday.yaml"), "confFile")) {
+      (Gen.const("test/resources/parameters.yaml"), "confFile")) {
         confFile =>
           {
-            val chain = SupplyChain.load(confFile)
-            chain should have size 22
+            val parms = Parameters.fromFile(confFile)
+
+            parms should have size 2
+            parms should contain(("grano" -> 2.0))
+            parms should contain(("mais" -> 3.4))
+          }
+      }
+  }
+
+  property("parameters classpath") {
+    forAll(
+      (Gen.const("/parameters.yaml"), "name")) {
+        name =>
+          {
+            val parms = Parameters.fromClasspath(name)
+
+            parms should have size 2
+            parms should contain(("grano" -> 2.0))
+            parms should contain(("mais" -> 3.4))
           }
       }
   }

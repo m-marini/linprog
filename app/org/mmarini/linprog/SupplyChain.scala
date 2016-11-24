@@ -40,10 +40,19 @@ import scalax.io.Codec
 import scalax.io.Resource
 
 object SupplyChain {
-  def apply(yaml: YamlValue): Map[String, Product] = new SupplyChainBuilder(yaml).build
+  def fromYaml(yaml: YamlValue): Map[String, Product] = new SupplyChainBuilder(yaml).build
 
-  def load(filename: String): Map[String, Product] =
-    apply(Resource.fromFile(filename).string(Codec.UTF8).parseYaml)
+  def fromYamlString(text: String): Map[String, Product] =
+    fromYaml(text.parseYaml)
+
+  def fromClasspath(name: String): Map[String, Product] ={
+    val stream = getClass.getResourceAsStream(name)
+    require(stream != null, s"Resource $name not found")
+    fromYaml(Resource.fromInputStream(stream).string(Codec.UTF8).parseYaml)
+  }
+  
+  def fromFile(filename: String): Map[String, Product] =
+    fromYamlString(Resource.fromFile(filename).string(Codec.UTF8))
 }
 
 /**
