@@ -29,15 +29,16 @@
 
 package org.mmarini.linprog
 
+import net.jcazevedo.moultingyaml.PimpedString
 import net.jcazevedo.moultingyaml.YamlNumber
 import net.jcazevedo.moultingyaml.YamlObject
 import net.jcazevedo.moultingyaml.YamlString
 import net.jcazevedo.moultingyaml.YamlValue
 import net.jcazevedo.moultingyaml.deserializationError
-import net.jcazevedo.moultingyaml.PimpedString
 import scalax.io.Codec
+import scalax.io.Input
 import scalax.io.Resource
-import scalax.io.InputResource
+import java.io.InputStream
 
 object Parameters {
   def fromYaml(yaml: YamlValue): Map[String, Double] = new ParmsBuilder(yaml).build
@@ -45,13 +46,25 @@ object Parameters {
   def fromYamlString(text: String): Map[String, Double] =
     fromYaml(text.parseYaml)
 
-  def fromFile(filename: String): Map[String, Double] =
-    fromYamlString(Resource.fromFile(filename).string(Codec.UTF8))
+  def fromInput(resource: Input): Map[String, Double] =
+    fromYamlString(resource.string(Codec.UTF8))
 
-  def fromClasspath(name: String): Map[String, Double] = {
-    val stream = getClass.getResourceAsStream(name)
-    require(stream != null, s"Resource $name not found")
-    fromYamlString(Resource.fromInputStream(stream).string(Codec.UTF8))
+  def fromFile(filename: String): Map[String, Double] =
+    fromInput(Resource.fromFile(filename))
+
+  def fromClasspath(name: String, clazz: Class[_]): Map[String, Double] = {
+    val stream = clazz.getResourceAsStream(name)
+    require(!Option(stream).isEmpty, s"Resource $name not found")
+    fromInput(Resource.fromInputStream(stream))
+  }
+
+  def fromClasspath(name: String): Map[String, Double] =
+    fromClasspath(name, getClass)
+
+  def fromClassLoader(name: String, classLoader: ClassLoader): Map[String, Double] = {
+    val stream = classLoader.getResourceAsStream(name)
+    require(!Option(stream).isEmpty, s"Resource $name not found")
+    fromInput(Resource.fromInputStream(stream))
   }
 }
 

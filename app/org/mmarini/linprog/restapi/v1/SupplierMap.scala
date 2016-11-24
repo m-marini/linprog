@@ -27,54 +27,41 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-import javax.inject.Inject
+package org.mmarini.linprog.restapi.v1
 
-import play.api.http._
-import play.api.mvc._
-import play.api.routing.Router
+import scala.annotation.implicitNotFound
+import scala.annotation.migration
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+
+import org.mmarini.linprog.SupplyChain
+
+import javax.inject.Singleton
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsPath
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
- * Handles all requests.
- *
- * https://www.playframework.com/documentation/2.5.x/ScalaHttpRequestHandlers#extending-the-default-request-handler
+ * DTO for displaying post information.
  */
-class RequestHandler @Inject() (router: Router,
-  errorHandler: HttpErrorHandler,
-  configuration: HttpConfiguration,
-  filters: HttpFilters)
-    extends DefaultHttpRequestHandler(router,
-      errorHandler,
-      configuration,
-      filters) {
+case class SupplierMap(
+  fixedSuppliers: Map[String, Int] = Map(),
+  randomSuppliers: Map[String, Int] = Map())
 
-  override def handlerForRequest(request: RequestHeader): (RequestHeader, Handler) = {
-    super.handlerForRequest {
-      // ensures that REST API does not need a trailing "/"
-      if (isREST(request)) {
-        addTrailingSlash(request)
-      } else {
-        request
-      }
-    }
-  }
+object SupplierMap {
 
-  private def isREST(request: RequestHeader) = {
-    request.uri match {
-      case uri: String if uri.contains("post") => true
-      case _ => false
-    }
-  }
-
-  private def addTrailingSlash(origReq: RequestHeader): RequestHeader = {
-    if (!origReq.path.endsWith("/")) {
-      val path = origReq.path + "/"
-      if (origReq.rawQueryString.isEmpty) {
-        origReq.copy(path = path, uri = path)
-      } else {
-        origReq.copy(path = path, uri = path + s"?${origReq.rawQueryString}")
-      }
-    } else {
-      origReq
+  /**
+   * Mapping to write a Farmer out as a JSON value.
+   */
+  implicit val implicitWrites = new Writes[SupplierMap] {
+    def writes(supplierMap: SupplierMap): JsValue = {
+      Json.obj(
+        "fixedSuppliers" -> supplierMap.fixedSuppliers,
+        "randomSuppliers" -> supplierMap.randomSuppliers)
     }
   }
 }

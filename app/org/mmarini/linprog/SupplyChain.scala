@@ -38,6 +38,9 @@ import net.jcazevedo.moultingyaml.YamlValue
 import net.jcazevedo.moultingyaml.deserializationError
 import scalax.io.Codec
 import scalax.io.Resource
+import scalax.io.managed.InputStreamResource
+import java.io.InputStream
+import scalax.io.Input
 
 object SupplyChain {
   def fromYaml(yaml: YamlValue): Map[String, Product] = new SupplyChainBuilder(yaml).build
@@ -45,14 +48,26 @@ object SupplyChain {
   def fromYamlString(text: String): Map[String, Product] =
     fromYaml(text.parseYaml)
 
-  def fromClasspath(name: String): Map[String, Product] ={
-    val stream = getClass.getResourceAsStream(name)
-    require(stream != null, s"Resource $name not found")
-    fromYaml(Resource.fromInputStream(stream).string(Codec.UTF8).parseYaml)
-  }
-  
+  def fromInput(resource: Input): Map[String, Product] =
+    fromYamlString(resource.string(Codec.UTF8))
+
   def fromFile(filename: String): Map[String, Product] =
-    fromYamlString(Resource.fromFile(filename).string(Codec.UTF8))
+    fromInput(Resource.fromFile(filename))
+
+  def fromClasspath(name: String, clazz: Class[_]): Map[String, Product] = {
+    val stream = clazz.getResourceAsStream(name)
+    require(!Option(stream).isEmpty, s"Resource $name not found")
+    fromInput(Resource.fromInputStream(stream))
+  }
+
+  def fromClasspath(name: String): Map[String, Product] =
+    fromClasspath(name, getClass)
+
+  def fromClassLoader(name: String, classLoader: ClassLoader): Map[String, Product] = {
+    val stream = classLoader.getResourceAsStream(name)
+    require(!Option(stream).isEmpty, s"Resource $name not found")
+    fromInput(Resource.fromInputStream(stream))
+  }
 }
 
 /**

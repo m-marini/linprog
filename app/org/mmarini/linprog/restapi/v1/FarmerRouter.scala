@@ -27,54 +27,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
+package org.mmarini.linprog.restapi.v1
+
 import javax.inject.Inject
+import play.api.routing.Router.Routes
+import play.api.routing.SimpleRouter
+import play.api.routing.sird._
+import play.api.routing.sird.PUT
+import play.api.routing.sird.DELETE
+import play.api.routing.sird.UrlContext
 
-import play.api.http._
-import play.api.mvc._
-import play.api.routing.Router
+class FarmerRouter @Inject() (
+    controller: FarmerController) extends SimpleRouter {
 
-/**
- * Handles all requests.
- *
- * https://www.playframework.com/documentation/2.5.x/ScalaHttpRequestHandlers#extending-the-default-request-handler
- */
-class RequestHandler @Inject() (router: Router,
-  errorHandler: HttpErrorHandler,
-  configuration: HttpConfiguration,
-  filters: HttpFilters)
-    extends DefaultHttpRequestHandler(router,
-      errorHandler,
-      configuration,
-      filters) {
-
-  override def handlerForRequest(request: RequestHeader): (RequestHeader, Handler) = {
-    super.handlerForRequest {
-      // ensures that REST API does not need a trailing "/"
-      if (isREST(request)) {
-        addTrailingSlash(request)
-      } else {
-        request
-      }
-    }
+  override def routes: Routes = {
+    case GET(p"/" ? q"n=$name") => controller.find(name)
+    case GET(p"/new") => controller.build("")
+    case GET(p"/$id") => controller.get(id)
+    case GET(p"/$id/suppliers") => controller.computeSuppliers(id)
+    case PUT(p"/$id") => controller.put(id)
+    case DELETE(p"/$id") => controller.delete(id)
   }
 
-  private def isREST(request: RequestHeader) = {
-    request.uri match {
-      case uri: String if uri.contains("post") => true
-      case _ => false
-    }
-  }
-
-  private def addTrailingSlash(origReq: RequestHeader): RequestHeader = {
-    if (!origReq.path.endsWith("/")) {
-      val path = origReq.path + "/"
-      if (origReq.rawQueryString.isEmpty) {
-        origReq.copy(path = path, uri = path)
-      } else {
-        origReq.copy(path = path, uri = path + s"?${origReq.rawQueryString}")
-      }
-    } else {
-      origReq
-    }
-  }
 }

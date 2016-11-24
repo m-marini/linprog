@@ -1,0 +1,94 @@
+// Copyright (c) 2016 Marco Marini, marco.marini@mmarini.org
+//
+// Licensed under the MIT License (MIT);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://opensource.org/licenses/MIT
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+package org.mmarini.linprog.restapi.v1
+
+import org.scalatestplus.play.OneServerPerTest
+import org.scalatestplus.play.PlaySpec
+
+import play.api.libs.json.JsLookupResult.jsLookupResultToJsLookup
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsValue.jsValueToJsLookup
+import play.api.libs.json.Json
+import play.api.libs.ws.WSClient
+import play.api.mvc.Results
+import play.api.test.Helpers.CREATED
+import play.api.test.Helpers.NOT_FOUND
+import play.api.test.Helpers.OK
+import play.api.test.Helpers.await
+import play.api.test.Helpers.defaultAwaitTimeout
+
+class SupplierMapTest extends PlaySpec with Results with OneServerPerTest {
+
+  "Create a supplier map" must {
+    "result a fixed supplier" in {
+      val json = createMap
+
+      val fixedSuppliers = (json \ "fixedSuppliers").as[Map[String, Int]]
+      fixedSuppliers must not be empty
+      fixedSuppliers must contain("grano" -> 1)
+    }
+    "result a random supplier" in {
+      val json = createMap
+
+      val randomSuppliers = (json \ "randomSuppliers").as[Map[String, Int]]
+      randomSuppliers must not be empty
+      randomSuppliers must contain("grano" -> 2)
+    }
+  }
+
+  private def createMap: JsValue = {
+    val wsClient = app.injector.instanceOf[WSClient]
+
+    val response = await(
+      wsClient.
+        url(s"http://localhost:$port/v1/farmers/new").
+        withQueryString("template" -> "any").
+        get)
+    response.status mustBe OK
+
+    val json = Json.parse(response.body)
+    val id = (json \ "id").as[String]
+
+    val putResponse = await(
+      wsClient.url(s"http://localhost:$port/v1/farmers/$id").
+        put(json))
+    putResponse.status mustBe CREATED
+
+    val responsePut = await(
+      wsClient.
+        url(s"http://localhost:$port/v1/farmers/$id/suppliers").
+        get)
+    responsePut.status mustBe OK
+
+    Json.parse(responsePut.body)
+  }
+}
