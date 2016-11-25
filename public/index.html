@@ -46,24 +46,18 @@
 				</button>
 				<a class="navbar-brand" href="./index.html#">Hay Day Advisor</a>
 			</div>
-			<!-- 
-			<div id="navbar" class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li class="active"><a href="./index.html#">Home</a></li>
-					<li><a href="./index.html#about">About</a></li>
-					<li><a href="./index.html#contact">Contact</a></li>
-				</ul>
-			</div>
-			 -->
+
 			<div id="navbar" class="navbar-collapse collapse">
 				<form class="navbar-form navbar-right">
 					<div class="form-group">
-						<input type="text" placeholder="Email" class="form-control">
+						<input id="email" type="text" placeholder="Email"
+							class="form-control">
 					</div>
 					<div class="form-group">
 						<input type="password" placeholder="Password" class="form-control">
 					</div>
-					<button type="submit" class="btn btn-success">Sign in</button>
+					<button id="signIn" type="submit" class="btn btn-success">Sign
+						in</button>
 				</form>
 			</div>
 			<!--/.nav-collapse -->
@@ -72,22 +66,24 @@
 
 	<div class="container">
 
+		<!-- Alert -->
+		<div id="alertPane" class="alert alert-danger" role="alert"></div>
+
 		<div class="hda">
 			<h1>Hay Day Advisor</h1>
 			<p class="lead">
 				The Hay Day Advisor suggests you the production policy to maximize
-				the profit rate for <a href="http://supercell.com/en/games/hayday/" target="hayday">
-					Hay Day &reg; game</a>.<br>It bases on <a
+				the profit rate for <a href="http://supercell.com/en/games/hayday/"
+					target="hayday"> Hay Day &reg; game</a>.<br>It bases on <a
 					href="https://en.wikipedia.org/wiki/Linear_programming"
 					target="wiki">linear programming method</a> considering the number
 				of suppliers (animals, machineries) and the price of products.
 			</p>
 			<p class="lead">
-				<button type="button" class="btn btn-primary btn-lg">Start
+				<button id="newFarmer" type="button" class="btn btn-primary btn-lg">Start
 					new advise</button>
 			</p>
 		</div>
-
 		<hr>
 
 		<footer>
@@ -109,6 +105,9 @@
 	<script src="./bootstrap/js/bootstrap.min.js"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="./js/ie10-viewport-bug-workaround.js"></script>
+	<script src="./js/jquery.blockUI.js"></script>
+	<script src="./js/hda-api.js"></script>
+	<script src="./js/home.js"></script>
 
 
 </body>

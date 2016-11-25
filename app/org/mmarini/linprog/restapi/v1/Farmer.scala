@@ -74,6 +74,6 @@ object Farmer {
   implicit val implicitReads: Reads[Farmer] = (
     (JsPath \ "id").read[String] and
     (JsPath \ "name").read[String] and
-    (JsPath \ "values").read[Map[String, Double]] and
-    (JsPath \ "suppliers").read[Map[String, Double]])(Farmer.apply _)
+    (JsPath \ "suppliers").read[Map[String, Double]] and
+    (JsPath \ "values").read[Map[String, Double]])(Farmer.apply _)
 }
