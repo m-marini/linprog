@@ -108,15 +108,15 @@ s(product_uova) = supplier_gallina;
 # No of suppliers
 n = zeros(noSuppliers, 1);
 n(supplier_barbeque) = 1.0;
-n(supplier_campo) = 57.0;
+n(supplier_campo) = 10.0;
 n(supplier_caseificio) = 1.0;
 n(supplier_forno_pasticci) = 1.0;
-n(supplier_gallina) = 18.0;
-n(supplier_maiale) = 15.0;
-n(supplier_mangimificio) = 2.0;
-n(supplier_mucca) = 15.0;
+n(supplier_gallina) = 6.0;
+n(supplier_maiale) = 5.0;
+n(supplier_mangimificio) = 1.0;
+n(supplier_mucca) = 5.0;
 n(supplier_panetteria) = 1.0;
-n(supplier_pecora) = 10.0;
+n(supplier_pecora) = 5.0;
 n(supplier_telaio) = 1.0;
 
 # Quantity of products by supplier
@@ -161,7 +161,7 @@ v(product_mangime_mucca) = 14.4;
 v(product_mangime_pecora) = 14.4;
 v(product_pancetta) = 50.4;
 v(product_pancetta_uova) = 201.0;
-v(product_pane) = 21.0;
+v(product_pane) = 21.6;
 v(product_pane_integrale) = 72.0;
 v(product_panna) = 50.0;
 v(product_pasticcio_carote) = 82.0;

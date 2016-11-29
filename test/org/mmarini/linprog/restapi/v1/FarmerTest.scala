@@ -52,13 +52,27 @@ class FarmerTest extends PlaySpec with Results with OneServerPerTest {
     "result the new farmer with name Default" in {
       val wsClient = app.injector.instanceOf[WSClient]
       val wsRequest = wsClient.url(s"http://localhost:$port/v1/farmers/new").
-        withQueryString("template" -> "any")
+        withQueryString("t" -> "base")
       val response = await(wsRequest.get)
       response.status mustBe OK
 
       val json = Json.parse(response.body)
       (json \ "name").as[String] mustBe "Default"
       (json \ "suppliers").as[Map[String, JsValue]] must not be empty
+      (json \ "suppliers" \ "campo").as[Int] mustBe (10)
+      (json \ "suppliers" \ "gallina").as[Int] mustBe (6)
+    }
+    "result the new farmer with defined product values" in {
+      val wsClient = app.injector.instanceOf[WSClient]
+      val wsRequest = wsClient.url(s"http://localhost:$port/v1/farmers/new").
+        withQueryString("t" -> "base")
+      val response = await(wsRequest.get)
+      response.status mustBe OK
+
+      val json = Json.parse(response.body)
+      (json \ "values").as[Map[String, JsValue]] must not be empty
+      (json \ "values" \ "grano").as[Double] mustBe (3.6)
+      (json \ "values" \ "mais").as[Double] mustBe (7.2)
     }
   }
 

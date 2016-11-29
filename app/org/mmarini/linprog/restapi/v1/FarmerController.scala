@@ -46,6 +46,7 @@ import play.api.mvc.Request
 import play.api.mvc.Result
 import play.api.mvc.WrappedRequest
 import play.api.data.Form
+import org.mmarini.linprog.restapi.v1._
 
 /**
  * The [[FarmerController]] returns an action to handle a specific request
@@ -55,20 +56,23 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository)(
 
   def computeSuppliers(id: String): Action[AnyContent] = action.async {
     implicit request =>
-      Future {
-        {
-          val map = SupplierMap(
-            fixedSuppliers = Map(),
-            randomSuppliers = Map())
-          Ok(Json.toJson(map))
-        }
+      repo.createSupplierMap(id).map {
+        case Some(conf) => Ok(Json.toJson(conf))
+        case None => BadRequest
       }
   }
 
   /** Creates the action to build a new farmer from a template */
   def build(template: String): Action[AnyContent] = action.async {
     implicit request =>
-      repo.build(template).map(farmer => Ok(Json.toJson(farmer)))
+      for {
+        farmerOpt <- repo.build(template)
+      } yield {
+        farmerOpt match {
+          case Some(farmer) => Ok(Json.toJson(farmer))
+          case None => NotFound
+        }
+      }
   }
 
   /** Creates the action to create a new farmer in repository */

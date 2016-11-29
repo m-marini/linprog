@@ -7,6 +7,7 @@ $(window)
 					var alert = window.alert;
 					var $ = window.$;
 					var console = window.console;
+					var _ = window._;
 					var hdaApi = window.hdaApi;
 
 					var myArray = /.*?id=(.*)/g.exec(window.location.href);
@@ -16,7 +17,6 @@ $(window)
 					} else {
 						hdaApi.alert('Missing id');
 					}
-
 					if (id) {
 						loadPage(id)
 					}
@@ -24,14 +24,18 @@ $(window)
 					function loadPage(id) {
 
 						hdaApi.getFarmer(id).then(renderPage);
+						hdaApi.getConfig(id).then(renderConfig);
 
 						function renderPage(data) {
-							console.info(data);
 							$('#userInfo').html('Signed in as ' + data.name);
-							renderProduction();
-							renderForecasts();
 							renderMarket(data);
 							renderConf(data);
+							return data;
+						}
+
+						function renderConfig(data) {
+							renderProduction(data);
+							renderForecasts(data);
 							return data;
 						}
 					}
@@ -42,53 +46,58 @@ $(window)
 					}
 
 					/* Renders production table */
-					function renderProduction() {
+					function renderProduction(data) {
 						clearTable('prodConf');
-						var rows = [];
-						for (i = 0; i < 10; i++) {
-							rows[i] = {
-								supplierImage : './img/demo.jpg',
-								supplierName : 'Supplier ' + i,
-								productImage : './img/demo.jpg',
-								productName : 'Product ' + i,
-								fixedQty : 10,
-								randomQty : 13
-							}
-						}
+						var rows = $.map(data.productions, toUIModel);
 						renderTableRows($('#prodConf'), rows, renderRow);
+
+						function toUIModel(v) {
+							return {
+								productName : hdaApi.productName(v.name),
+								productImage : './img/' + v.name + '.png',
+								supplierName : hdaApi
+										.supplierName(v.supplierName),
+								supplierImage : './img/' + v.supplierName
+										+ '.png',
+								randomQty : v.random,
+								fixedQty : v.fixed
+							};
+						}
 
 						function renderRow(f) {
 							var html = '<td><img src="' + f.supplierImage
 									+ '" alt="Image of ' + f.supplierName
-									+ '" class="img-rounded">' + f.supplierName
-									+ '</td><td><img src="' + f.productImage
-									+ '" alt="Image of ' + f.productName
-									+ '" class="img-rounded">' + f.productName
-									+ '</td><td>' + f.fixedQty + '</td><td>'
-									+ f.randomQty + '</td><td>'
+									+ '" class="img-rounded hda-image">'
+									+ f.supplierName + '</td><td><img src="'
+									+ f.productImage + '" alt="Image of '
+									+ f.productName
+									+ '" class="img-rounded hda-image">'
+									+ f.productName + '</td><td>' + f.fixedQty
+									+ '</td><td>' + f.randomQty + '</td><td>'
 									+ (f.fixedQty + f.randomQty) + '</td>';
 							return html;
 						}
 					}
 
 					/* Renders forecast table */
-					function renderForecasts() {
+					function renderForecasts(data) {
 						clearTable('forecasts');
-						var rows = [];
-						for (i = 0; i < 10; i++) {
-							rows[i] = {
-								image : './img/demo.jpg',
-								name : 'Product ' + i,
-								qty : 10,
-							}
-						}
+						var rows = $.map(data.consumptions, toUIModel);
 						renderTableRows($('#forecasts'), rows, renderRow);
+
+						function toUIModel(v, key) {
+							return {
+								name : hdaApi.productName(key),
+								image : './img/' + key + '.png',
+								qty : v
+							};
+						}
 
 						function renderRow(f) {
 							var html = '<td><img src="' + f.image
 									+ '" alt="Image of ' + f.name
-									+ '" class="img-rounded">' + f.name
-									+ '</td><td>' + f.qty + '</td>';
+									+ '" class="img-rounded hda-image">'
+									+ f.name + '</td><td>' + f.qty + '</td>';
 							return html;
 						}
 					}
@@ -96,26 +105,25 @@ $(window)
 					/* Renders market table */
 					function renderMarket(data) {
 						clearTable('marketTable');
-
 						var rows = $.map(data.values, toRenderModel);
 						renderTableRows($('#marketTable'), rows, renderRow);
 
 						function toRenderModel(value, key) {
 							return {
-								image : './img/demo.jpg',
+								image : './img/' + key + '.png',
 								name : hdaApi.productName(key),
 								value : value
 							};
 						}
 
 						function renderRow(f) {
-							var html = '<td><img src="'
+							var html = '<td>'
+									+ f.name
+									+ '</td><td><img src="'
 									+ f.image
 									+ '" alt="Image of '
 									+ f.name
-									+ '" class="img-rounded">'
-									+ f.name
-									+ '</td><td><input type="text" class="form-control" placeholder="Price of '
+									+ '" class="img-rounded hda-image"></td><td><input type="text" class="form-control" placeholder="Price of '
 									+ 'grano' + '" value="' + f.value
 									+ '"></td>';
 							return html;
@@ -125,26 +133,25 @@ $(window)
 					/* Renders configuration table */
 					function renderConf(data) {
 						clearTable('confTable');
-
 						var rows = $.map(data.suppliers, toRenderModel);
 						renderTableRows($('#confTable'), rows, renderRow);
 
 						function toRenderModel(value, key) {
 							return {
-								image : './img/demo.jpg',
+								image : './img/' + key + '.png',
 								name : hdaApi.supplierName(key),
 								qty : value
 							};
 						}
 
 						function renderRow(f) {
-							var html = '<td><img src="'
+							var html = '<td>'
+									+ f.name
+									+ '</td><td><img src="'
 									+ f.image
 									+ '" alt="Image of '
 									+ f.name
-									+ '" class="img-rounded">'
-									+ f.name
-									+ '</td><td><input type="text" class="form-control" placeholder="Price of '
+									+ '" class="img-rounded hda-image"></td><td><input type="text" class="form-control" placeholder="Price of '
 									+ 'grano' + '" value="' + f.qty + '"></td>';
 							return html;
 						}

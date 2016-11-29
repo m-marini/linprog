@@ -27,26 +27,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-package org.mmarini.linprog.restapi.v1
+package org.mmarini.linprog
 
-import javax.inject.Inject
-import play.api.routing.Router.Routes
-import play.api.routing.SimpleRouter
-import play.api.routing.sird._
-import play.api.routing.sird.PUT
-import play.api.routing.sird.DELETE
-import play.api.routing.sird.UrlContext
+/**
+ * DTO for displaying post information.
+ */
 
-class FarmerRouter @Inject() (
-    controller: FarmerController) extends SimpleRouter {
+case class ProductConf(
+  name: String,
+  supplierName: String,
+  fixed: Int,
+  random: Int)
 
-  override def routes: Routes = {
-    case GET(p"/" ? q"n=$name") => controller.find(name)
-    case GET(p"/new" ? q"t=$template") => controller.build(template)
-    case GET(p"/$id") => controller.get(id)
-    case GET(p"/$id/suppliers") => controller.computeSuppliers(id)
-    case PUT(p"/$id") => controller.put(id)
-    case DELETE(p"/$id") => controller.delete(id)
-  }
-
-}
+case class SupplyChainConf(
+  productions: Map[String, ProductConf],
+  consumptions: Map[String, Int])

@@ -27,41 +27,40 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-package org.mmarini.linprog.restapi.v1
+package org.mmarini.linprog.restapi
 
-import scala.annotation.implicitNotFound
-import scala.annotation.migration
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import org.mmarini.linprog.ProductConf
+import org.mmarini.linprog.SupplyChainConf
 
-import org.mmarini.linprog.SupplyChain
-
-import javax.inject.Singleton
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.JsPath
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-/**
- * DTO for displaying post information.
- */
-case class SupplierMap(
-  fixedSuppliers: Map[String, Int] = Map(),
-  randomSuppliers: Map[String, Int] = Map())
-
-object SupplierMap {
+package object v1 {
 
   /**
    * Mapping to write a Farmer out as a JSON value.
    */
-  implicit val implicitWrites = new Writes[SupplierMap] {
-    def writes(supplierMap: SupplierMap): JsValue = {
+  implicit val implicitProductConfWrites = new Writes[ProductConf] {
+    def writes(supplierMap: ProductConf): JsValue = {
       Json.obj(
-        "fixedSuppliers" -> supplierMap.fixedSuppliers,
-        "randomSuppliers" -> supplierMap.randomSuppliers)
+        "name" -> supplierMap.name,
+        "supplierName" -> supplierMap.supplierName,
+        "fixed" -> supplierMap.fixed,
+        "random" -> supplierMap.random)
     }
   }
+
+  /**
+   * Mapping to write a Farmer out as a JSON value.
+   */
+  implicit val implicitSupplyChainConfWrites = new Writes[SupplyChainConf] {
+    def writes(conf: SupplyChainConf): JsValue = {
+      Json.obj(
+        "productions" -> conf.productions,
+        "consumptions" -> conf.consumptions)
+    }
+  }
+
 }

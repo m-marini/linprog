@@ -29,21 +29,16 @@
 
 package org.mmarini.linprog.restapi.v1
 
-import scala.annotation.implicitNotFound
-import scala.annotation.migration
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
+import org.mmarini.linprog.Parameters
 import org.mmarini.linprog.SupplyChain
+import org.mmarini.linprog.SupplyChainConf
+import org.mmarini.linprog.ProductConf
+
 
 import javax.inject.Singleton
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.JsPath
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 /**
  *
@@ -53,23 +48,39 @@ class FarmerRepository {
 
   private var store: Map[String, Farmer] = Map()
   private val chain = SupplyChain.fromClasspath("/chain.yaml")
+  private val templates = Map(
+    "base" -> ((
+      Parameters.fromClasspath("/max-values.yaml"),
+      Parameters.fromClasspath("/base-config.yaml").map { case (k, v) => (k, v.toInt) })))
 
-  def createSupplierMap(id: Farmer): Future[SupplierMap] = Future.successful {
-    SupplierMap(Map(), Map())
-  }
+  def createSupplierMap(id: String)(implicit ec: ExecutionContext): Future[Option[SupplyChainConf]] =
+    for {
+      farmerOpt <- retrieveById(id)
+    } yield for {
+      farmer <- farmerOpt
+    } yield {
+      val sup = Map("grano" -> ProductConf("grano", "campo", 3, 1),
+        "mais" -> ProductConf("mais", "campo", 4, 0),
+        "carote" -> ProductConf("carote", "campo", 0, 2))
+      SupplyChainConf(
+        productions = sup,
+        consumptions = Map("grano" -> 10))
+    }
 
   /** Creates a Farmer from a template name */
-  def build(template: String)(implicit ec: ExecutionContext): Future[Farmer] =
+  def build(template: String)(implicit ec: ExecutionContext): Future[Option[Farmer]] =
     Future.successful {
-      val values = chain.keys.map((_, 0.0)).toMap
-      val y = chain.values.toList.
-        map(x => x.producer).toSet
-      val suppliers = y.map((_, 0.0)).toMap
-      Farmer(
-        id = java.util.UUID.randomUUID.toString,
-        name = "Default",
-        suppliers = suppliers,
-        values = values)
+      for {
+        (values, suppliers) <- templates.get(template)
+      } yield {
+        val y = chain.values.toList.
+          map(x => x.producer).toSet
+        Farmer(
+          id = java.util.UUID.randomUUID.toString,
+          name = "Default",
+          suppliers = suppliers,
+          values = values)
+      }
     }
 
   /**  */

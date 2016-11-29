@@ -56,9 +56,16 @@ $(window)
 						hideAlert : hideAlert,
 						getFarmer : getFarmer,
 						productName : productName,
-						supplierName : supplierName
+						supplierName : supplierName,
+						getTemplate : getFarmerTemplate,
+						getConfig : getConfig
 					};
 
+					function getConfig(id) {
+						return send('/v1/farmers/' + id + '/suppliers');
+					}
+
+					/* Converts the supplier id to name */
 					function supplierName(id) {
 						var name = supplierNameMap[id];
 						if (name) {
@@ -68,6 +75,7 @@ $(window)
 						}
 					}
 
+					/* Converts the product id to name */
 					function productName(id) {
 						var name = productNameMap[id];
 						if (name) {
@@ -105,7 +113,7 @@ $(window)
 					/* Sign in the user */
 					function signIn(user, password) {
 						msg = 'Signing in ...';
-						return getFarmerTemplate().pipe(store);
+						return getFarmerTemplate('base').pipe(store);
 
 						function store(farmer) {
 							farmer.name = user;
@@ -115,7 +123,7 @@ $(window)
 
 					/* Returns the promise of farm template */
 					function getFarmerTemplate(template) {
-						return send('/v1/farmers/new?template=' + template);
+						return send('/v1/farmers/new?t=' + template);
 					}
 
 					/* Returns the promise of farm */

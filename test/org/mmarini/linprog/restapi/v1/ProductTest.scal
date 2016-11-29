@@ -46,22 +46,17 @@ import play.api.test.Helpers.OK
 import play.api.test.Helpers.await
 import play.api.test.Helpers.defaultAwaitTimeout
 
-class SupplierMapTest extends PlaySpec with Results with OneServerPerTest {
+class ProductTest extends PlaySpec with Results with OneServerPerTest {
 
-  "Create a supplier map" must {
-    "result a fixed supplier" in {
+  "Create a configuration" must {
+    "result a supplier map with at least grano product config" in {
       val json = createMap
 
-      val fixedSuppliers = (json \ "fixedSuppliers").as[Map[String, Int]]
-      fixedSuppliers must not be empty
-      fixedSuppliers must contain("grano" -> 1)
-    }
-    "result a random supplier" in {
-      val json = createMap
-
-      val randomSuppliers = (json \ "randomSuppliers").as[Map[String, Int]]
-      randomSuppliers must not be empty
-      randomSuppliers must contain("grano" -> 2)
+      (json \ "productions").as[Map[String, Int]] must not be empty
+//      (json \ "productions" \ "grano" \ "name").as[String] mustBe "grano"
+//      (json \ "productions" \ "grano" \ "supplierName").as[String] mustBe "campo"
+//      (json \ "productions" \ "grano" \ "fixed").as[Int] mustBe 3
+//      (json \ "productions" \ "grano" \ "random").as[Int] mustBe 1
     }
   }
 
