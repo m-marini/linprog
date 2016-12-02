@@ -183,22 +183,63 @@ such that
 	G = g_i = (V' F)' ) F' V = N' (Q'-D) V
 \]
 
-The problem is to find the optimal production configuration that maximize the value rate. This is defined by the linear system composed by
+The problem is to find the optimal production configuration given by the
+values of $ w_i $ and $ z_i $ that maximize the value rate $ G(w_i) $.
+This is defined by the linear system composed by
 (\ref{equ:YConstraints})
 (\ref{equ:ZConstraints}),
 (\ref{equ:normalInterval}),
 (\ref{equ:consumptionConstraint}),
 (\ref{equ:valueRate})
-\[
+\begin{equation}
+\label{equ:linsist}
 \left\{
 \begin{array}{ll}
-	\max_{(w_i, z_j)} G(w_i) & , i \in B, j \in A \\
-	U_i(w_j, z_i) = 1 &  , i \in A, j \in B \\
-	F_i \ge 0 & , i \in B \\
-	w_i \ge 0 & , i \in B \\
-	z_i \ge 0 & , i \in A
+\max_{(w_i, z_j)} G(w_i) & , i \in B, j \in A \\
+U_i(w_j, z_i) = 1 &  , i \in A, j \in B \\
+F_i \ge 0 & , i \in B \\
+w_i \ge 0 & , i \in B \\
+z_i \ge 0 & , i \in A
 \end{array}
 \right.
+\end{equation}
+
+
+\subsection{Supplier configuration}
+
+Una volta risolto il sistema (\ref{equ:linsist}) ci troviamo con le distribuzioni degli slot di produzione dei produttori.
+Per l'uso pratico dobbiamo trasformare i pesi di distribuzione degli slot
+in una configurazione di produzione reale.
+
+Il primo passo per far questo è trasformare le $ w_i $ e $ z_i $ nel numero di produttori per prodotto.
+
+Il numero di produttori che producono il prodotto $ i \in B $ è dato dal tempo totale di produzione dei suppliers per ogni singolo prodotto rispetto al totale $ U_i(w_i, z_j) = 1 $ 
+\[
+	\pi_i = n_{s_i} w_i t_i
 \]
+\[
+  \Pi = N T W
+\]
+
+La parte intera di $ \Pi $ ci da il numero di produttori fissi per
+prodotto
+\[
+	F = |\Pi|
+\]
+
+Il numero totale di produttori fissi è quindi
+\[
+	tot_i = \sum_{j \in B}  \theta_{ij} f_j
+\]
+\[
+	Tot = \Theta F
+\]
+
+I rimanenti produttori
+\[
+	Var = N - Tot
+\]
+sono distribuiti secondo la parte frazionaria $ \Pi - F $.
+
 
 \end{document}

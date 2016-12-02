@@ -50,7 +50,7 @@ z = x(noProducts + 1 : end);
 
 W = Theta .* w';
 
-# P prodotti (distribuzione produtti)
+# P prodotti (distribuzione prodotti)
 PP = W ./ (sum(W, 2) + z);
 
 # P temporale (distribuzione produttori)
@@ -61,11 +61,24 @@ Profit = -c' * x * 3600;
 
 # Vendite per ora
 Selling = F * w * 3600;
-NP = sum(NS)';
 
+printf("#### Vendite orarie ####\n");
 productNames(find(Selling > 0.1))
-int32(Selling(find(Selling > 0.1)))
+Selling(find(Selling > 0.1))
 
-productNames(find(NP > 0.1))
-int32(NP(find(NP > 0.1)))
 
+printf("#### numero di produttori fissi per prodotto ####\n");
+# Numero di produttori per prodotto
+np = N * T * w; 
+# Numero fisso di produttori per prodotto
+nf = floor(np);
+# numero variabile di produttori per prodotto
+nr = np - nf;
+# numero totale di produttori fissi
+totf = Theta * nf;
+# numero totale di produttori variabili
+totr = max(n - totf, ones(noSuppliers, 1));
+# numero totale di produttori variabili per prodotto
+tr = Theta' * totr;
+# Probabilità di produttore variabile per prodotto
+pr = inv(diag(tr)) * nr;

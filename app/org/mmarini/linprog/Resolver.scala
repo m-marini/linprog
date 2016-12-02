@@ -30,7 +30,7 @@
 package org.mmarini.linprog
 
 class Resolver(chain: Map[String, Product], suppliers: Map[String, Int], values: Map[String, Double]) {
-  def resolve() {
-
+  def resolve(): SupplyChainConf = {
+    SupplyChainConf(Map(), Map())
   }
 }
