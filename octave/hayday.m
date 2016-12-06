@@ -73,12 +73,7 @@ np = N * T * w;
 # Numero fisso di produttori per prodotto
 nf = floor(np);
 # numero variabile di produttori per prodotto
-nr = np - nf;
-# numero totale di produttori fissi
-totf = Theta * nf;
-# numero totale di produttori variabili
-totr = max(n - totf, ones(noSuppliers, 1));
-# numero totale di produttori variabili per prodotto
-tr = Theta' * totr;
-# Probabilità di produttore variabile per prodotto
-pr = inv(diag(tr)) * nr;
+r = np - nf;
+r1 = max(ceil(Theta*r), ones(noSuppliers, 1));
+
+p1 = diag(r) * Theta' * inv(diag(r1));

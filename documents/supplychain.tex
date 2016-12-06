@@ -232,14 +232,36 @@ Il numero totale di produttori fissi è quindi
 	tot_i = \sum_{j \in B}  \theta_{ij} f_j
 \]
 \[
-	Tot = \Theta F
+	TOT = \Theta F
 \]
 
-I rimanenti produttori
+La parte frazionaria invece determina la distribuzione parziale dei produttori per prodotto
 \[
-	Var = N - Tot
+	R = \Pi - F
 \]
-sono distribuiti secondo la parte frazionaria $ \Pi - F $.
+
+Il numero totale di produttori variabili è dato da
+\[
+	RTOT = ceil(\Theta R)
+\]
+
+La distribuzione dei produttori variabili per prodotto e data poi da
+\[
+	P(i,j) = \frac{r_i \theta_{ij}}{rtot_j}, rtot_j > 0
+\]
+Ponendo
+\begin{equation}
+\label{eq:ktot}
+	rtot'_j = \max(rtot_j, 1)
+\end{equation}
+possiamo generalizzare 
+\[
+	P(i,j) = \frac{r_i \theta_{ij}}{rtot'_j}
+\]
+e diagonalizzando $ r $ e $ rtot' $ abbiamo
+\[
+P(i,j) = diag(R) \, \Theta \, diag^{-1}(RTOT')
+\]
 
 
 \end{document}
