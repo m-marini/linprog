@@ -29,23 +29,125 @@
 
 package org.mmarini.linprog
 
+import breeze.optimize.linear.LinearProgram
+import breeze.linalg.DenseVector
+import breeze.linalg.DenseMatrix
+import breeze.linalg.diag
+import sun.misc.VM
+
 class Resolver(chain: Map[String, Product], suppliers: Map[String, Int], values: Map[String, Double]) {
+
+  /** Resolves the configuration */
   def resolve(): SupplyChainConf = {
 
-    import breeze.optimize.linear._
-    val lp = new LinearProgram()
-    import lp._
-    val x0 = Real()
-    val x1 = Real()
-    val x2 = Real()
-
-    val lpp = ((x0 + x1 * 2 + x2 * 3)
-      subjectTo (x0 * -1 + x1 + x2 <= 20)
-      subjectTo (x0 - x1 * 3 + x2 <= 30)
-      subjectTo (x0 <= 40))
-
-    val result = maximize(lpp)
-
     SupplyChainConf(Map(), Map())
+  }
+
+  /** */
+  val productNames: Seq[String] = chain.keys.toIndexedSeq.sorted
+
+  /** */
+  val suppliersNames: Seq[String] = chain.values.map(_.producer).toSet.toIndexedSeq.sorted
+
+  /** */
+  val noProducts: Int = productNames.size
+
+  /** */
+  val noSuppliers: Int = suppliersNames.size
+
+  /** */
+  val noVars: Int = noProducts + noSuppliers
+
+  /** */
+  val vVector: DenseVector[Double] =
+    DenseVector(productNames.map(values).toArray: _*)
+
+  /** */
+  val qVector: DenseVector[Double] =
+    DenseVector(productNames.map(chain(_).quantity).toArray: _*)
+
+  /** */
+  val qMatrix: DenseMatrix[Double] = diag(qVector)
+
+  /** */
+  val nVector: DenseVector[Double] =
+    DenseVector(suppliersNames.map(suppliers(_).toDouble).toArray: _*)
+
+  /** */
+  val n1Vector: DenseVector[Double] =
+    DenseVector(productNames.
+      map {
+        p => suppliers(chain(p).producer).toDouble
+      }.
+      toArray: _*)
+
+  /** */
+  val nMatrix: DenseMatrix[Double] = diag(n1Vector)
+
+  /** */
+  val dMatrix: DenseMatrix[Double] = {
+    val x = DenseMatrix.zeros[Double](noProducts, noProducts)
+    for {
+      (name, i) <- productNames.zipWithIndex
+      (consName, j) <- productNames.zipWithIndex
+      value <- chain(name).consumptions.get(consName)
+    } {
+      x(i, j) = value
+    }
+    x
+  }
+
+  /** */
+  val gVector: DenseVector[Double] = nMatrix * (qMatrix - dMatrix) * vVector
+
+  /** */
+  val minVector: DenseVector[Double] =
+    DenseVector.vertcat(-gVector, DenseVector.zeros[Double](noSuppliers))
+
+  /** */
+  val thetaMatrix: DenseMatrix[Double] = {
+    val theta = DenseMatrix.zeros[Double](noSuppliers, noProducts)
+    for {
+      (name, i) <- productNames.zipWithIndex
+    } {
+      val j = suppliersNames.indexOf(chain(name).producer)
+      theta(j, i) = 1
+    }
+    theta
+  }
+
+  /** */
+  val tVector: DenseVector[Double] =
+    DenseVector(productNames.map(chain(_).time.toSeconds.toDouble).toArray: _*)
+
+  /** */
+  val tMatrix: DenseMatrix[Double] = diag(tVector)
+
+  /** */
+  val uMatrix: DenseMatrix[Double] = thetaMatrix * tMatrix
+
+  /** */
+  val equMatrix: DenseMatrix[Double] =
+    DenseMatrix.horzcat(uMatrix, DenseMatrix.eye[Double](noSuppliers))
+
+  /** */
+  val equVector: DenseVector[Double] = DenseVector.ones[Double](noSuppliers)
+
+  /** */
+  val fMatrix: DenseMatrix[Double] = (qMatrix - dMatrix.t) * nMatrix
+
+  /** */
+  val geMatrix: DenseMatrix[Double] = {
+    DenseMatrix.zeros(0, 0)
+  }
+
+  /** */
+  val geVector: DenseVector[Double] = {
+    DenseVector.zeros(0)
+  }
+
+  /** */
+  val xVector: DenseVector[Double] = {
+    DenseVector.zeros(0)
   }
 }
