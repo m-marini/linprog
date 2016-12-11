@@ -43,7 +43,7 @@ import scala.util.Try
  *    A * X = B
  * where A is a matrix and B is a vector
  * and
- * 		D * X >= F
+ *    D * X >= F
  * where D is a matrix and F is a vector
  */
 class LinearProgResolver(

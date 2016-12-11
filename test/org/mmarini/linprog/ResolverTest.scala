@@ -11,7 +11,7 @@
 // files (the "Software"), to deal in the Software without
 // restriction, including without limitation the rights to use,
 // copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit pesursons to whom the
+// copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
 //
@@ -40,8 +40,12 @@ import breeze.linalg.max
 import breeze.numerics.abs
 
 class ResolverTest extends PropSpec with PropertyChecks with Matchers {
+  val NoProducts = 22
+  val NoSuppliers = 11
+  val NoVars = 33
+  val Epsilon = 1e-4
 
-  def buildResolver = {
+  def buildResolver: Resolver = {
     val chain = SupplyChain.fromClasspath("/chain.yaml")
     val values = Parameters.fromClasspath("/max-values.yaml")
     val suppliers = Parameters.fromClasspath("/base-config.yaml").
@@ -50,7 +54,7 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
     resolver
   }
 
-  def assertLike(x: DenseVector[Double], expected: Double*)(implicit epsilon: Double = 1e-4) {
+  def assertLike(x: DenseVector[Double], expected: Double*)(implicit epsilon: Double = Epsilon) {
     x.length shouldBe expected.length
     x.toArray.zip(expected).foreach { case (x, exp) => x shouldBe exp +- epsilon }
   }
@@ -100,10 +104,10 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            assertLike(resolver.nVector, 1, 10, 1, 1, 6, 5, 1, 5, 1, 5, 1)
+            assertLike(resolver.nVector, 1, 10.0, 1, 1, 6.0, 5.0, 1, 5.0, 1, 5.0, 1)
 
             assertLike(resolver.n1Vector,
-              1, 10, 1, 10, 1, 5, 5, 1, 10, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 10, 6)
+              1, 10.0, 1, 10.0, 1, 5.0, 5.0, 1, 10.0, 1, 1, 1, 1, 5.0, 1, 1, 1, 1, 1, 1, 10.0, 6.0)
 
             resolver.nMatrix shouldBe diag(resolver.n1Vector)
 
@@ -116,8 +120,8 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.dMatrix should have('rows(22))
-            resolver.dMatrix should have('cols(22))
+            resolver.dMatrix should have('rows(NoProducts))
+            resolver.dMatrix should have('cols(NoProducts))
 
           }
       }
@@ -159,8 +163,8 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.thetaMatrix should have('rows(11))
-            resolver.thetaMatrix should have('cols(22))
+            resolver.thetaMatrix should have('rows(NoSuppliers))
+            resolver.thetaMatrix should have('cols(NoProducts))
 
             resolver.thetaMatrix(2, 0) shouldBe 1
             resolver.thetaMatrix(1, 1) shouldBe 1
@@ -209,31 +213,31 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.uMatrix should have('rows(11))
-            resolver.uMatrix should have('cols(22))
+            resolver.uMatrix should have('rows(NoSuppliers))
+            resolver.uMatrix should have('cols(NoProducts))
 
-            resolver.uMatrix(2, 0) shouldBe 1800
-            resolver.uMatrix(1, 1) shouldBe 600
-            resolver.uMatrix(2, 2) shouldBe 3600
-            resolver.uMatrix(1, 3) shouldBe 120
-            resolver.uMatrix(0, 4) shouldBe 7200
-            resolver.uMatrix(9, 5) shouldBe 21600
-            resolver.uMatrix(7, 6) shouldBe 3600
-            resolver.uMatrix(10, 7) shouldBe 7200
-            resolver.uMatrix(1, 8) shouldBe 300
-            resolver.uMatrix(6, 9) shouldBe 240
-            resolver.uMatrix(6, 10) shouldBe 1200
-            resolver.uMatrix(6, 11) shouldBe 600
-            resolver.uMatrix(6, 12) shouldBe 1800
-            resolver.uMatrix(5, 13) shouldBe 14400
-            resolver.uMatrix(0, 14) shouldBe 3600
-            resolver.uMatrix(8, 15) shouldBe 240
-            resolver.uMatrix(8, 16) shouldBe 1800
-            resolver.uMatrix(2, 17) shouldBe 1200
-            resolver.uMatrix(3, 18) shouldBe 3600
-            resolver.uMatrix(3, 19) shouldBe 10800
-            resolver.uMatrix(1, 20) shouldBe 1200
-            resolver.uMatrix(4, 21) shouldBe 600
+            resolver.uMatrix(2, 0) shouldBe 1800.0
+            resolver.uMatrix(1, 1) shouldBe 600.0
+            resolver.uMatrix(2, 2) shouldBe 3600.0
+            resolver.uMatrix(1, 3) shouldBe 120.0
+            resolver.uMatrix(0, 4) shouldBe 7200.0
+            resolver.uMatrix(9, 5) shouldBe 21600.0
+            resolver.uMatrix(7, 6) shouldBe 3600.0
+            resolver.uMatrix(10, 7) shouldBe 7200.0
+            resolver.uMatrix(1, 8) shouldBe 300.0
+            resolver.uMatrix(6, 9) shouldBe 240.0
+            resolver.uMatrix(6, 10) shouldBe 1200.0
+            resolver.uMatrix(6, 11) shouldBe 600.0
+            resolver.uMatrix(6, 12) shouldBe 1800.0
+            resolver.uMatrix(5, 13) shouldBe 14400.0
+            resolver.uMatrix(0, 14) shouldBe 3600.0
+            resolver.uMatrix(8, 15) shouldBe 240.0
+            resolver.uMatrix(8, 16) shouldBe 1800.0
+            resolver.uMatrix(2, 17) shouldBe 1200.0
+            resolver.uMatrix(3, 18) shouldBe 3600.0
+            resolver.uMatrix(3, 19) shouldBe 10800.0
+            resolver.uMatrix(1, 20) shouldBe 1200.0
+            resolver.uMatrix(4, 21) shouldBe 600.0
           }
       }
   }
@@ -243,8 +247,8 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.equMatrix should have('rows(11))
-            resolver.equMatrix should have('cols(33))
+            resolver.equMatrix should have('rows(NoSuppliers))
+            resolver.equMatrix should have('cols(NoVars))
 
             resolver.equMatrix(2, 0) shouldBe 1800
             resolver.equMatrix(1, 1) shouldBe 600
@@ -289,7 +293,7 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.equVector shouldBe DenseVector.ones[Double](11)
+            resolver.equVector shouldBe DenseVector.ones[Double](NoSuppliers)
           }
       }
   }
@@ -299,8 +303,8 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.fMatrix should have('rows(22))
-            resolver.fMatrix should have('cols(22))
+            resolver.fMatrix should have('rows(NoProducts))
+            resolver.fMatrix should have('cols(NoProducts))
 
             resolver.fMatrix(0, 0) shouldBe 1
             resolver.fMatrix(6, 0) shouldBe -2
@@ -313,8 +317,8 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.geMatrix should have('rows(22 + 33))
-            resolver.geMatrix should have('cols(22))
+            resolver.geMatrix should have('rows(NoProducts + NoVars))
+            resolver.geMatrix should have('cols(NoVars))
 
             resolver.geMatrix(0, 0) shouldBe 1
             resolver.geMatrix(6, 0) shouldBe -2
@@ -327,7 +331,7 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            resolver.geVector.length shouldBe 22 + 33
+            resolver.geVector shouldBe DenseVector.zeros[Double](NoProducts + NoVars)
           }
       }
   }
@@ -337,12 +341,42 @@ class ResolverTest extends PropSpec with PropertyChecks with Matchers {
       (Gen.const(buildResolver), "resolver")) {
         resolver =>
           {
-            assertLike(resolver.xVector,
-              0.00000, 0.00009, 0.00000, 0.00640, 0.00000, 0.00000, 0.00017, 0.00000, 0.00036, 0.00333, 0.00003,
-              0.00028, 0.00000, 0.00002, 0.00004, 0.00417, 0.00000, 0.00083, 0.00028, 0.00000, 0.00006, 0.00167,
-              0.85000, 0.00000, 0.00000, 0.00000, 0.00000, 0.76000, 0.00000, 0.40000, 0.00000, 1.00000, 1.00000)
+            resolver.xVector.length shouldBe NoVars
+
+            resolver.xVector(0) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(1) shouldBe 0.00009 +- Epsilon
+            resolver.xVector(2) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(3) shouldBe 0.00640 +- Epsilon
+            resolver.xVector(4) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(5) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(6) shouldBe 0.00017 +- Epsilon
+            resolver.xVector(7) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(8) shouldBe 0.00036 +- Epsilon
+            resolver.xVector(9) shouldBe 0.00333 +- Epsilon
+            resolver.xVector(10) shouldBe 0.00003 +- Epsilon
+            resolver.xVector(11) shouldBe 0.00028 +- Epsilon
+            resolver.xVector(12) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(13) shouldBe 0.00002 +- Epsilon
+            resolver.xVector(14) shouldBe 0.00004 +- Epsilon
+            resolver.xVector(15) shouldBe 0.00417 +- Epsilon
+            resolver.xVector(16) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(17) shouldBe 0.00083 +- Epsilon
+            resolver.xVector(18) shouldBe 0.00028 +- Epsilon
+            resolver.xVector(19) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(20) shouldBe 0.00006 +- Epsilon
+            resolver.xVector(21) shouldBe 0.00167 +- Epsilon
+            resolver.xVector(22) shouldBe 0.85000 +- Epsilon
+            resolver.xVector(23) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(24) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(25) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(26) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(27) shouldBe 0.76000 +- Epsilon
+            resolver.xVector(28) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(29) shouldBe 0.40000 +- Epsilon
+            resolver.xVector(30) shouldBe 0.00000 +- Epsilon
+            resolver.xVector(31) shouldBe 1.00000 +- Epsilon
+            resolver.xVector(32) shouldBe 1.00000 +- Epsilon
           }
       }
   }
-
 }

@@ -69,8 +69,7 @@ Selling(find(Selling > 0.1))
 
 printf("#### numero di produttori fissi per prodotto ####\n");
 # Numero di produttori per prodotto
-np = N * T * w; 
-# Numero fisso di produttori per prodotto
+np\# Numero fisso di produttori per prodotto
 nf = floor(np);
 # numero variabile di produttori per prodotto
 r = np - nf;
