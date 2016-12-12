@@ -10,6 +10,20 @@ $(window)
 					$(document).ajaxStart(renderBlockUI).ajaxStop($.unblockUI);
 					var msg = "...";
 					hideAlert();
+					var supplierOrder = [ 'campo', 'mangimificio', 'gallina',
+							'mucca', 'maiale', 'panetteria', 'caseificio',
+							'zuccherificio', 'stufa_popcorn', 'barbeque',
+							'forno_pasticci', 'melo' ];
+					var productOrder = [ 'grano', 'mais', 'soia',
+							'canna_zucchero', 'carote', 'indaco', 'zucca',
+							'mangime_galline', 'mangime_mucca',
+							'mangime_maiale', 'uova', 'pane', 'pane_integrale',
+							'biscotto', 'latte', 'panna', 'burro', 'formaggio',
+							'zucchero_canna', 'zucchero', 'pancake',
+							'pancetta_uova', 'popcorn', 'pancetta',
+							'pasticcio_carote', 'pasticcio_zucca', 'mela'
+
+					];
 					var productNameMap = {
 						grano : 'Grano',
 						mais : 'Mais',
@@ -31,9 +45,18 @@ $(window)
 						pancetta_uova : 'Pancetta e uova',
 						hamburger : 'Hamburger',
 						maglione : 'Maglione',
-						pasticcio_carote : 'Pastiggio di carote',
-						pasticcio_pancetta : 'Pasticcio di pancetta'
-
+						pasticcio_carote : 'Pasticcio di carote',
+						pasticcio_pancetta : 'Pasticcio di pancetta',
+						canna_zucchero : 'Canna da zucchero',
+						zucchero_canna : 'Zucchero di canna',
+						zucchero : 'Zucchero',
+						zucca : 'Zucca',
+						pasticcio_zucca : 'Torta di zucca',
+						indaco : 'Indaco',
+						biscotto : 'Biscotto',
+						popcorn : 'Popcorn',
+						pancake : 'Pancake',
+						mela : 'Mela'
 					};
 					var supplierNameMap = {
 						pecora : 'Pecore',
@@ -46,7 +69,10 @@ $(window)
 						mangimificio : 'Mangimifici',
 						panetteria : 'Panetterie',
 						gallina : 'Galline',
-						telaio : 'Telai'
+						telaio : 'Telai',
+						stufa_popcorn : 'Stufe per popcorn',
+						melo : 'Meli',
+						zuccherificio : 'Zuccherifici'
 					};
 
 					window.hdaApi = {
@@ -58,7 +84,9 @@ $(window)
 						productName : productName,
 						supplierName : supplierName,
 						getTemplate : getFarmerTemplate,
-						getConfig : getConfig
+						getConfig : getConfig,
+						productOrder : productOrder,
+						supplierOrder : supplierOrder
 					};
 
 					function getConfig(id) {

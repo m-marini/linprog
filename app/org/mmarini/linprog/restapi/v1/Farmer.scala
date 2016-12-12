@@ -50,6 +50,7 @@ import play.api.libs.json.Writes
  */
 case class Farmer(id: String,
   name: String,
+  level: Int,
   suppliers: Map[String, Int] = Map(),
   values: Map[String, Double] = Map())
 
@@ -63,6 +64,7 @@ object Farmer {
       Json.obj(
         "id" -> farmer.id,
         "name" -> farmer.name,
+        "level" -> farmer.level,
         "suppliers" -> farmer.suppliers,
         "values" -> farmer.values)
     }
@@ -74,6 +76,7 @@ object Farmer {
   implicit val implicitReads: Reads[Farmer] = (
     (JsPath \ "id").read[String] and
     (JsPath \ "name").read[String] and
+    (JsPath \ "level").read[Int] and
     (JsPath \ "suppliers").read[Map[String, Int]] and
     (JsPath \ "values").read[Map[String, Double]])(Farmer.apply _)
 }

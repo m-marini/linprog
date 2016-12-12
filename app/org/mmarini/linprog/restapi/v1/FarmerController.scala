@@ -66,7 +66,7 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository)(
   def build(template: String): Action[AnyContent] = action.async {
     implicit request =>
       for {
-        farmerOpt <- repo.build(template)
+        farmerOpt <- repo.build(template, 15)
       } yield {
         farmerOpt match {
           case Some(farmer) => Ok(Json.toJson(farmer))

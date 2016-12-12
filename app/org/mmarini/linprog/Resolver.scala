@@ -34,19 +34,31 @@ import breeze.linalg.DenseVector
 import breeze.linalg.diag
 import breeze.linalg.max
 import breeze.linalg.inv
+import breeze.linalg.sum
 import breeze.numerics.floor
 import breeze.numerics.ceil
+import breeze.stats.distributions.Rand
+import breeze.stats.distributions.RandBasis
 
 /** */
-class Resolver(chain: Map[String, Product], suppliers: Map[String, Int], values: Map[String, Double]) {
+class Resolver(
+    chain: Map[String, Product],
+    suppliers: Map[String, Int],
+    values: Map[String, Double])(
+        implicit random: RandBasis = Rand) {
 
   /** Resolves the configuration */
   def resolve(): SupplyChainConf = {
+    val rp = rndProducts
     val pc = (for {
       (pName, i) <- productNames.zipWithIndex
     } yield {
       (pName,
-        ProductConf(pName, chain(pName).producer, np1Vector(i).toInt, 0))
+        ProductConf(
+          name = pName,
+          supplierName = chain(pName).producer,
+          fixed = np1Vector(i).toInt,
+          random = rp.getOrElse(pName, 0)))
     }).toMap
 
     SupplyChainConf(pc, computeConsumptions(pc.values.map {
@@ -218,4 +230,29 @@ class Resolver(chain: Map[String, Product], suppliers: Map[String, Int], values:
 
   /** */
   lazy val probMatrix: DenseMatrix[Double] = thetaMatrix * diag(probVector)
+
+  /** */
+  lazy val rndProducts: Map[String, Int] = {
+    val rndSuppliers = for {
+      i <- 0 until noSuppliers
+      p = probMatrix(i, ::).t
+      if (sum(p) > 0)
+      j <- 0 until totRndVector(i).toInt
+      idx <- choose(p)
+    } yield idx
+    rndSuppliers.
+      groupBy(x => x).
+      map(x => productNames(x._1) -> x._2.length)
+  }
+
+  def choose(p: DenseVector[Double]): Option[Int] = {
+    val rr = random.uniform.draw
+    val cf = DenseVector.zeros[Double](p.length)
+    for { i <- 0 until p.length } {
+      cf(i) = sum(p(0 to i))
+    }
+    val idx = cf.toArray.indexWhere { x => rr < x }
+    val y = if (idx >= 0) Some(idx) else None
+    y
+  }
 }

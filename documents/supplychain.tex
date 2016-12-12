@@ -207,61 +207,51 @@ z_i \ge 0 & , i \in A
 
 \subsection{Supplier configuration}
 
-Una volta risolto il sistema (\ref{equ:linsist}) ci troviamo con le distribuzioni degli slot di produzione dei produttori.
-Per l'uso pratico dobbiamo trasformare i pesi di distribuzione degli slot
-in una configurazione di produzione reale.
+Once resolved the system (\ ref {equ: linsist}) we have the distributions of the suppliers production slots.
+We have to transform them into a concrete production configuration assigning for each supplier the producing product or inactivity.
 
-Il primo passo per far questo è trasformare le $ w_i $ e $ z_i $ nel numero di produttori per prodotto.
-
-Il numero di produttori che producono il prodotto $ i \in B $ è dato dal tempo totale di produzione dei suppliers per ogni singolo prodotto rispetto al totale $ U_i(w_i, z_j) = 1 $ 
+The numbers of suppliers that are producing the product $ i \in B $  are given by the total production times of the suppliers for each product rated by the total production times $ U_i(w_i, z_j) = 1 $.
 \[
-	\pi_i = n_{s_i} w_i t_i
-\]
-\[
-  \Pi = N T W
+\begin{array}{l}
+	\pi_i = n_{s_i} w_i t_i \\
+	\Pi = N T W
+\end{array}
 \]
 
-La parte intera di $ \Pi $ ci da il numero di produttori fissi per
-prodotto
+The integer parts of $ \Pi $ give the number of constant producers by product
 \[
-	F = |\Pi|
+	F = floor(\Pi)
 \]
 
-Il numero totale di produttori fissi è quindi
-\[
-	tot_i = \sum_{j \in B}  \theta_{ij} f_j
-\]
-\[
-	TOT = \Theta F
-\]
-
-La parte frazionaria invece determina la distribuzione parziale dei produttori per prodotto
+The remainder fractional parts determine the variable distributions of remainder suppliers by product.
 \[
 	R = \Pi - F
 \]
 
-Il numero totale di produttori variabili è dato da
+The real configuration may be determined by stocastic selection process based on such distribution.
+
+The total numbers of random suppliers are
 \[
-	RTOT = ceil(\Theta R)
+	R' = ceil(\Theta R)
 \]
 
-La distribuzione dei produttori variabili per prodotto e data poi da
-\[
-	P(i,j) = \frac{r_i \theta_{ij}}{rtot_j}, rtot_j > 0
-\]
-Ponendo
-\begin{equation}
-\label{eq:ktot}
-	rtot'_j = \max(rtot_j, 1)
-\end{equation}
-possiamo generalizzare 
-\[
-	P(i,j) = \frac{r_i \theta_{ij}}{rtot'_j}
-\]
-e diagonalizzando $ r $ e $ rtot' $ abbiamo
-\[
-P(i,j) = diag(R) \, \Theta \, diag^{-1}(RTOT')
+To generalize the computation of the probability of a product for each random supplier let the total numbers of suppliers be  \[
+	R" = max(R', 1) \ge 1
 \]
 
+The total numbers of random suppliers by product are
+\[
+	S = \Theta^T R"
+\]
+
+The probabilities of products to be produced by the suppliers are then
+\[
+	P = diag(S)^{-1} R
+\]
+
+To generate a random configurationi with the given distribution $ P $ we need to compute the probabilities of each product$ j \in B $ for each supplier $ i \in A $:
+\[
+	P' = p'_{ij} = \Theta \, diag(P)
+\]
 
 \end{document}

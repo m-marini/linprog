@@ -101,7 +101,7 @@ class LinearProgResolver(
     } yield exp >= f(i)
 
     val constrs = equConstrs ++ gtConstrs
-    
+
     minimize(exp.subjectTo(constrs.toArray: _*)).result
   }
 }

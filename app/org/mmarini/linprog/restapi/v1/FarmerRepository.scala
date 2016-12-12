@@ -29,14 +29,15 @@
 
 package org.mmarini.linprog.restapi.v1
 
+import scala.annotation.migration
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import org.mmarini.linprog.Parameters
+import org.mmarini.linprog.Product
+import org.mmarini.linprog.Resolver
 import org.mmarini.linprog.SupplyChain
 import org.mmarini.linprog.SupplyChainConf
-import org.mmarini.linprog.ProductConf
-
 
 import javax.inject.Singleton
 
@@ -47,40 +48,35 @@ import javax.inject.Singleton
 class FarmerRepository {
 
   private var store: Map[String, Farmer] = Map()
-  private val chain = SupplyChain.fromClasspath("/chain.yaml")
-  private val templates = Map(
-    "base" -> ((
-      Parameters.fromClasspath("/max-values.yaml"),
-      Parameters.fromClasspath("/base-config.yaml").map { case (k, v) => (k, v.toInt) })))
 
+  def chain(level: Int): Map[String, Product] = SupplyChain.fromClasspath(s"/chain-$level.yaml")
+
+  /** */
   def createSupplierMap(id: String)(implicit ec: ExecutionContext): Future[Option[SupplyChainConf]] =
     for {
       farmerOpt <- retrieveById(id)
     } yield for {
       farmer <- farmerOpt
     } yield {
-      val sup = Map("grano" -> ProductConf("grano", "campo", 3, 1),
-        "mais" -> ProductConf("mais", "campo", 4, 0),
-        "carote" -> ProductConf("carote", "campo", 0, 2))
-      SupplyChainConf(
-        productions = sup,
-        consumptions = Map("grano" -> 10))
+      new Resolver(chain(farmer.level), farmer.suppliers, farmer.values).resolve
     }
 
   /** Creates a Farmer from a template name */
-  def build(template: String)(implicit ec: ExecutionContext): Future[Option[Farmer]] =
+  def build(template: String, level: Int)(implicit ec: ExecutionContext): Future[Option[Farmer]] =
     Future.successful {
-      for {
-        (values, suppliers) <- templates.get(template)
-      } yield {
-        val y = chain.values.toList.
-          map(x => x.producer).toSet
-        Farmer(
-          id = java.util.UUID.randomUUID.toString,
-          name = "Default",
-          suppliers = suppliers,
-          values = values)
-      }
+      val ch = chain(level)
+      val values = Parameters.fromClasspath("/max-values.yaml").filter(item => ch.contains(item._1))
+      val suppliers = Parameters.
+        fromClasspath(s"/config-$level.yaml").
+        map { case (k, v) => k -> v.toInt }
+      val y = ch.values.toList.
+        map(x => x.producer).toSet
+      Option(Farmer(
+        id = java.util.UUID.randomUUID.toString,
+        level = level,
+        name = "Default",
+        suppliers = suppliers,
+        values = values))
     }
 
   /**  */

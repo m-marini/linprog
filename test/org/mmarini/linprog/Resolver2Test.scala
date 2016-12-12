@@ -591,4 +591,16 @@ class Resolver2Test extends PropSpec with PropertyChecks with Matchers {
           }
       }
   }
+
+  property("resolver rndProduct") {
+    forAll(
+      (Gen.const(buildResolver), "resolver")) {
+        resolver =>
+          {
+            val c = resolver.rndProducts
+
+            c should have size (1)
+          }
+      }
+  }
 }

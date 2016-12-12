@@ -1,0 +1,37 @@
+grano:
+  quantity: 2
+  interval: 2 min
+  consumptions:
+    grano: 1
+  producer: campo
+mais:
+  quantity: 2
+  interval: 5 min
+  consumptions:
+    mais: 1
+  producer: campo
+mangime_galline:
+  quantity: 3
+  interval: 4 min
+  consumptions:
+    grano: 1
+    mais: 1
+  producer: mangimificio
+uova:
+  quantity: 1
+  interval: 10 min
+  consumptions:
+    mangime_galline: 1
+  producer: gallina
+pane:
+  quantity: 1
+  interval: 4 min
+  consumptions:
+    grano: 3
+  producer: panetteria
+soia:
+  quantity: 2
+  interval: 20 min
+  consumptions:
+    soia: 1
+  producer: campo
