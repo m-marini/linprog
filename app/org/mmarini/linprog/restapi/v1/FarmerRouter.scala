@@ -42,7 +42,7 @@ class FarmerRouter @Inject() (
 
   override def routes: Routes = {
     case GET(p"/" ? q"n=$name") => controller.find(name)
-    case GET(p"/new" ? q"t=$template") => controller.build(template)
+    case GET(p"/new" ? q"t=$template" & q"l=${ int(level) }") => controller.build(template, level)
     case GET(p"/$id") => controller.get(id)
     case GET(p"/$id/suppliers") => controller.computeSuppliers(id)
     case PUT(p"/$id") => controller.put(id)

@@ -77,6 +77,7 @@ $(window)
 
 					window.hdaApi = {
 						signIn : signIn,
+						register : register,
 						send : send,
 						alert : hdaAlert,
 						hideAlert : hideAlert,
@@ -141,7 +142,42 @@ $(window)
 					/* Sign in the user */
 					function signIn(user, password) {
 						msg = 'Signing in ...';
-						return getFarmerTemplate('base').pipe(store);
+						return getFarmerByName(user).then(checkForSign);
+				
+						function checkForSign(list) {
+							if (list.length != 0) {
+								return list[0];
+							} else {
+								var msg = 'User ' + user
+										+ ' not found';
+								console.error(msg);
+								hdaAlert(msg);
+								return jQuery.Deferred().reject(msg);
+							}
+						}
+					}
+
+					/* Sign in the user */
+					function register(user, password, template, level) {
+						msg = 'Registering ...';
+						return getFarmerByName(user).pipe(checkDuplicate).pipe(
+								createTemplate).pipe(store);
+
+						function checkDuplicate(list) {
+							if (list.length == 0) {
+								return list;
+							} else {
+								var msg = 'User ' + user
+										+ ' already registrered';
+								console.error(msg);
+								hdaAlert(msg);
+								return jQuery.Deferred().reject(msg);
+							}
+						}
+
+						function createTemplate() {
+							return getFarmerTemplate(template, level);
+						}
 
 						function store(farmer) {
 							farmer.name = user;
@@ -150,13 +186,19 @@ $(window)
 					}
 
 					/* Returns the promise of farm template */
-					function getFarmerTemplate(template) {
-						return send('/v1/farmers/new?t=' + template);
+					function getFarmerTemplate(template, level) {
+						return send('/v1/farmers/new?t=' + template + '&l='
+								+ level);
 					}
 
 					/* Returns the promise of farm */
 					function getFarmer(id) {
 						return send('/v1/farmers/' + id);
+					}
+
+					/* Returns the promise of farm */
+					function getFarmerByName(name) {
+						return send('/v1/farmers/?n=' + name);
 					}
 
 					/*

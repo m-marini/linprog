@@ -69,7 +69,7 @@
 		<!-- Alert -->
 		<div id="alertPane" class="alert alert-danger" role="alert"></div>
 
-		<div class="hda">
+		<div id="welcomePane" class="hda">
 			<h1>Hay Day Advisor</h1>
 			<p class="lead">
 				The Hay Day Advisor suggests you the production policy to maximize
@@ -84,12 +84,42 @@
 					new advise</button>
 			</p>
 		</div>
-		<hr>
 
+		<div id="registrationPane" class="hda">
+			<h1>Registration</h1>
+			<div class="form-group">
+				<label for="registrationEmail">Email address</label> <input
+					id="registrationEmail" type="email" class="form-control"
+					placeholder="Email">
+			</div>
+			<div class="form-group">
+				<label for="registrationPsw">Password</label> <input type="password"
+					class="form-control" id="registrationPsw" placeholder="Password">
+			</div>
+			<div class="form-group">
+				<label for="registrationConfirmPsw">Confirm Password</label> <input
+					type="password" class="form-control" id="registrationConfirmPsw"
+					placeholder="Confirm Password">
+			</div>
+			<div class="form-group">
+				<label for="registrationTemplate">Template Name</label> <input
+					id="registrationTemplate" type="text" class="form-control"
+					placeholder="Template Name">
+			</div>
+			<div class="form-group">
+				<label for="registrationLevel">Level</label> <input
+					id="registrationLevel" type="text" class="form-control"
+					placeholder="Level">
+			</div>
+			<div class="form-group">
+				<button id="abortRegistration" type="button" class="btn btn-danger">Cancel</button>
+				<button id="register" type="button" class="btn btn-success">Register</button>
+			</div>
+		</div>
+		<hr>
 		<footer>
 			<p>&copy; 2016 Marco Marini</p>
 		</footer>
-
 	</div>
 	<!-- /.container -->
 

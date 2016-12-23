@@ -35,6 +35,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.JsLookupResult.jsLookupResultToJsLookup
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
+import play.api.libs.json.JsNumber
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json.Json
@@ -48,24 +49,27 @@ import play.api.test.Helpers.defaultAwaitTimeout
 
 class FarmerTest extends PlaySpec with Results with OneServerPerTest {
 
+  val TestLevel = 5
+
   "Create a new farmer when GET /v1/farmers/new" must {
     "result the new farmer with name Default" in {
       val wsClient = app.injector.instanceOf[WSClient]
       val wsRequest = wsClient.url(s"http://localhost:$port/v1/farmers/new").
-        withQueryString("t" -> "base")
+        withQueryString("t" -> "base", "l" -> "5")
       val response = await(wsRequest.get)
       response.status mustBe OK
 
       val json = Json.parse(response.body)
       (json \ "name").as[String] mustBe "Default"
+      (json \ "level").as[Int] mustBe TestLevel
       (json \ "suppliers").as[Map[String, JsValue]] must not be empty
-      (json \ "suppliers" \ "campo").as[Int] mustBe (10)
+      (json \ "suppliers" \ "campo").as[Int] mustBe (12)
       (json \ "suppliers" \ "gallina").as[Int] mustBe (6)
     }
     "result the new farmer with defined product values" in {
       val wsClient = app.injector.instanceOf[WSClient]
       val wsRequest = wsClient.url(s"http://localhost:$port/v1/farmers/new").
-        withQueryString("t" -> "base")
+        withQueryString("t" -> "base", "l" -> "5")
       val response = await(wsRequest.get)
       response.status mustBe OK
 
@@ -96,6 +100,7 @@ class FarmerTest extends PlaySpec with Results with OneServerPerTest {
           JsObject(Seq(
             "id" -> JsString(id),
             "name" -> JsString(name),
+            "level" -> JsNumber(TestLevel),
             "values" -> JsObject(Seq()),
             "suppliers" -> JsObject(Seq())))))
     putResponse.status mustBe CREATED
@@ -123,6 +128,7 @@ class FarmerTest extends PlaySpec with Results with OneServerPerTest {
       val payload = JsObject(Seq(
         "id" -> JsString("1"),
         "name" -> JsString("changed"),
+        "level" -> JsNumber(TestLevel),
         "values" -> JsObject(Seq()),
         "suppliers" -> JsObject(Seq())))
       val response = await(wsRequest.put(payload))

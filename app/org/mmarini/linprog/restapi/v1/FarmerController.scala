@@ -63,10 +63,10 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository)(
   }
 
   /** Creates the action to build a new farmer from a template */
-  def build(template: String): Action[AnyContent] = action.async {
+  def build(template: String, level: Int): Action[AnyContent] = action.async {
     implicit request =>
       for {
-        farmerOpt <- repo.build(template, 5)
+        farmerOpt <- repo.build(template, level)
       } yield {
         farmerOpt match {
           case Some(farmer) => Ok(Json.toJson(farmer))
