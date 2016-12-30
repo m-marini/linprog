@@ -1,4 +1,5 @@
 import sbt.Keys._
+import com.github.mmizutani.sbt.gulp.PlayGulpPlugin
 
 lazy val GatlingTest = config("gatling") extend Test
 

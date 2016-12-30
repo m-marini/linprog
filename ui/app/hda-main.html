@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="images/favicon.jpg">
+<title>Hay Day Advisor</title>
+<!-- Custom styles for this template -->
+<link href="styles/app.css" rel="stylesheet">
+
+</head>
+
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="./index.html#">Hay Day Advisor</a>
+			</div>
+			<p id="userInfo" class="navbar-text navbar-right"></p>
+			<!--/.nav-collapse -->
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="hda">
+			<!-- Nav tabs -->
+			<ul id="mainTab" class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active"><a href="#strategy"
+					aria-controls="strategy" role="tab" data-toggle="tab">Strategy</a></li>
+				<li role="presentation"><a href="#market"
+					aria-controls="market" role="tab" data-toggle="tab">Market</a></li>
+				<li role="presentation"><a href="#conf" aria-controls="conf"
+					role="tab" data-toggle="tab">Configuration</a></li>
+			</ul>
+
+			<!-- Alert -->
+			<div id="alertPane" class="alert alert-danger" role="alert"></div>
+
+			<!-- Tab panes -->
+			<div class="tab-content">
+
+				<!-- Strategy panel -->
+				<div role="tabpanel" class="tab-pane" id="strategy">
+					<!-- 
+					<div class="row">
+						<button type="button" class="btn btn-default btn-sm">
+							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>New
+							advise
+						</button>
+					</div>
+			 -->
+					<div class="row">
+						<div class="col-md-6">
+							<table class="table table-striped">
+								<caption>Production configuration</caption>
+								<thead>
+									<tr>
+										<th>Supplier</th>
+										<th>&nbsp;</th>
+										<th>Product</th>
+										<th>&nbsp;</th>
+										<th>Fixed</th>
+										<th>Random</th>
+										<th>Total</th>
+									</tr>
+
+								</thead>
+								<tbody id="prodConf">
+								</tbody>
+							</table>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-striped">
+								<caption>Forecast consumptions</caption>
+								<thead>
+									<tr>
+										<th>Product</th>
+										<th>&nbsp;</th>
+										<th>Quantity</th>
+									</tr>
+								</thead>
+								<tbody id="forecasts">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Market panel -->
+				<div role="tabpanel" class="tab-pane active" id="market">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Product</th>
+								<th>&nbsp;</th>
+								<th>Price</th>
+							</tr>
+
+						</thead>
+						<tbody id="marketTable">
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Configuration panel -->
+				<div role="tabpanel" class="tab-pane" id="conf">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Suppliers</th>
+								<th>Quantity</th>
+							</tr>
+
+						</thead>
+						<tbody id="confTable">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<hr>
+
+		<footer>
+			<p>&copy; 2016 Marco Marini</p>
+		</footer>
+
+	</div>
+	<!-- /.container -->
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="scripts/vendor.js"></script>
+	<script src="scripts/main.js"></script>
+</body>
+</html>

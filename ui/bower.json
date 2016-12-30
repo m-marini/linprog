@@ -1,0 +1,9 @@
+{
+  "name": "linprog",
+  "version": "0.0.0",
+  "dependencies": {
+    "bootstrap": ">=3.3.7",
+    "jquery": "^2.1.1",
+    "lodash": "^2.4.1"
+  }
+}

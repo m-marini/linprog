@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="images/favicon.jpg">
+<title>Hay Day Advisor</title>
+<!-- Custom styles for this template -->
+<link href="styles/app.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="./index.html#">Hay Day Advisor</a>
+			</div>
+
+			<div id="navbar" class="navbar-collapse collapse">
+				<form id="signForm" class="navbar-form navbar-right">
+					<div class="form-group">
+						<input id="email" type="text" placeholder="Email"
+							class="form-control">
+					</div>
+					<div class="form-group">
+						<input type="password" placeholder="Password" class="form-control">
+					</div>
+					<button type="submit" class="btn btn-success">Sign
+						in</button>
+				</form>
+			</div>
+			<!--/.nav-collapse -->
+		</div>
+	</nav>
+
+	<div class="container">
+
+		<!-- Alert -->
+		<div id="alertPane" class="alert alert-danger" role="alert"></div>
+
+		<div id="welcomePane" class="hda">
+			<h1>Hay Day Advisor</h1>
+			<p class="lead">
+				The Hay Day Advisor suggests you the production policy to maximize
+				the profit rate for <a href="http://supercell.com/en/games/hayday/"
+					target="hayday"> Hay Day &reg; game</a>.<br>It bases on <a
+					href="https://en.wikipedia.org/wiki/Linear_programming"
+					target="wiki">linear programming method</a> considering the number
+				of suppliers (animals, machineries) and the price of products.
+			</p>
+			<p class="lead">
+				<button id="newFarmer" type="button" class="btn btn-primary btn-lg">Start
+					new advise</button>
+			</p>
+		</div>
+
+		<div id="registrationPane" class="hda">
+			<h1>Registration</h1>
+			<div class="form-group">
+				<label for="registrationEmail">Email address</label> <input
+					id="registrationEmail" type="email" class="form-control"
+					placeholder="Email">
+			</div>
+			<div class="form-group">
+				<label for="registrationPsw">Password</label> <input type="password"
+					class="form-control" id="registrationPsw" placeholder="Password">
+			</div>
+			<div class="form-group">
+				<label for="registrationConfirmPsw">Confirm Password</label> <input
+					type="password" class="form-control" id="registrationConfirmPsw"
+					placeholder="Confirm Password">
+			</div>
+			<div class="form-group">
+				<label for="registrationTemplate">Template Name</label> <input
+					id="registrationTemplate" type="text" class="form-control"
+					placeholder="Template Name">
+			</div>
+			<div class="form-group">
+				<label for="registrationLevel">Level</label> <input
+					id="registrationLevel" type="text" class="form-control"
+					placeholder="Level">
+			</div>
+			<div class="form-group">
+				<button id="abortRegistration" type="button" class="btn btn-danger">Cancel</button>
+				<button id="register" type="button" class="btn btn-success">Register</button>
+			</div>
+		</div>
+		<hr>
+		<footer>
+			<p>&copy; 2016 Marco Marini</p>
+		</footer>
+	</div>
+	<!-- /.container -->
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="scripts/vendor.js"></script>
+	<script src="scripts/home.js"></script>
+</body>
+</html>
