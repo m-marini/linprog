@@ -9,7 +9,8 @@ $(window)
 					var console = window.console;
 					var hdaApi = window.hdaApi;
 
-					$('#signIn').on('click', signIn);
+					// $('#signIn').on('click', signIn);
+					$('#signInForm').submit(signIn);
 					$('#newFarmer').on('click', showRegistration);
 					$('#abortRegistration').on('click', abortRegistration);
 					$('#register').on('click', createFarmer);
@@ -22,21 +23,26 @@ $(window)
 						var name = $('#email').val();
 
 						// Validation
-						if (name) {
-							hdaApi.signIn(name, '').then(signOk);
-						} else {
+						if (!name) {
 							hdaApi.alert('Missing email');
+						} else if (!validateEmail(name)) {
+							hdaApi.alert('Invalid email');
+						} else {
+							hdaApi.signIn(name, '').then(signOk);
 						}
+						return false;
 					}
 
 					/* Registration form */
 					function showRegistration() {
+						hdaApi.hideAlert();
 						$('#welcomePane').hide();
 						$('#registrationPane').show();
 					}
 
 					/* Registration form */
 					function abortRegistration() {
+						hdaApi.hideAlert();
 						$('#registrationPane').hide();
 						$('#welcomePane').show();
 					}
@@ -85,12 +91,11 @@ $(window)
 						if (!template) {
 							return "Missing template";
 						}
-						
+
 						var level = $('#registrationLevel').val();
 						if (!level) {
 							return "Missing level";
 						}
-
 
 						return "";
 					}

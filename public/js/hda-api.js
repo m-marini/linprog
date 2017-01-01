@@ -76,17 +76,18 @@ $(window)
 					};
 
 					window.hdaApi = {
-						signIn : signIn,
+						alert : hdaAlert,
+						getConfig : getConfig,
+						getFarmer : getFarmer,
+						getTemplate : getFarmerTemplate,
+						hideAlert : hideAlert,
+						productName : productName,
+						productOrder : productOrder,
+						putFarmer : putFarmer,
 						register : register,
 						send : send,
-						alert : hdaAlert,
-						hideAlert : hideAlert,
-						getFarmer : getFarmer,
-						productName : productName,
+						signIn : signIn,
 						supplierName : supplierName,
-						getTemplate : getFarmerTemplate,
-						getConfig : getConfig,
-						productOrder : productOrder,
 						supplierOrder : supplierOrder
 					};
 

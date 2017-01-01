@@ -72,7 +72,8 @@
 				<!-- Strategy panel -->
 				<div role="tabpanel" class="tab-pane active" id="strategy">
 					<div class="row">
-						<button type="button" class="btn btn-default btn-sm">
+						<button id="newAdvice" type="button"
+							class="btn btn-default btn-sm">
 							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>New
 							advise
 						</button>
@@ -116,44 +117,56 @@
 
 				<!-- Market panel -->
 				<div role="tabpanel" class="tab-pane" id="market">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Product</th>
-								<th>&nbsp;</th>
-								<th>Price</th>
-							</tr>
+					<form id="marketForm">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Product</th>
+									<th>&nbsp;</th>
+									<th>Price</th>
+								</tr>
 
-						</thead>
-						<tbody id="marketTable">
-						</tbody>
-					</table>
+							</thead>
+							<tbody id="marketTable">
+							</tbody>
+						</table>
+						<button type="submit" class="btn btn-default">
+							<span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+							Save
+						</button>
+					</form>
 				</div>
 
 				<!-- Configuration panel -->
 				<div role="tabpanel" class="tab-pane" id="conf">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Suppliers</th>
-								<th>Quantity</th>
-							</tr>
+					<form id="configForm">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Suppliers</th>
+									<th>Quantity</th>
+								</tr>
 
-						</thead>
-						<tbody id="confTable">
-							<tr>
-								<td><img src="./img/demo.jpg" alt="Image of mais"
-									class="img-rounded">Campo</td>
-								<td><input type="text" class="form-control"
-									placeholder="Number of campi" value="10"></td>
-							</tr>
-							<tr>
-								<td><img src="./img/demo.jpg" alt="Image of mais"
-									class="img-rounded">Galline</td>
-								<td><input type="text" class="form-control"
-									placeholder="Number of galline" value="10"></td>
-						</tbody>
-					</table>
+							</thead>
+							<tbody id="confTable">
+								<tr>
+									<td><img src="./img/demo.jpg" alt="Image of mais"
+										class="img-rounded">Campo</td>
+									<td><input type="text" class="form-control"
+										placeholder="Number of campi" value="10"></td>
+								</tr>
+								<tr>
+									<td><img src="./img/demo.jpg" alt="Image of mais"
+										class="img-rounded">Galline</td>
+									<td><input type="text" class="form-control"
+										placeholder="Number of galline" value="10"></td>
+							</tbody>
+						</table>
+						<button type="submit" class="btn btn-default">
+							<span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+							Save
+						</button>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -182,6 +195,7 @@
 	<script src="./js/jquery.blockUI.js"></script>
 	<script src="./js/lodash.min.js"></script>
 	<script src="./js/hda-api.js"></script>
+	<script src="./js/hda-comp.js"></script>
 	<script src="./js/hda-main.js"></script>
 </body>
 </html>
