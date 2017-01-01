@@ -45,11 +45,18 @@
 			<div id="navbar" class="navbar-collapse collapse">
 				<form id="signInForm" class="navbar-form navbar-right">
 					<div class="form-group">
-						<input id="email" type="text" placeholder="Email"
-							class="form-control">
+						<div id="email" class="input-group">
+							<input type="email" class="form-control" placeholder="Email"
+								aria-describedby="email-addon"> <span
+								class="input-group-addon" id="email-addon"></span>
+						</div>
 					</div>
 					<div class="form-group">
-						<input type="password" placeholder="Password" class="form-control">
+						<div id="psw" class="input-group">
+							<input type="password" class="form-control"
+								placeholder="Password" aria-describedby="psw-addon"> <span
+								class="input-group-addon" id="psw-addon"></span>
+						</div>
 					</div>
 					<button id="signIn" type="submit" class="btn btn-success">Sign
 						in</button>
@@ -82,34 +89,68 @@
 
 		<div id="registrationPane" class="hda">
 			<h1>Registration</h1>
-			<div class="form-group">
-				<label for="registrationEmail">Email address</label> <input
-					id="registrationEmail" type="email" class="form-control"
-					placeholder="Email">
-			</div>
-			<div class="form-group">
-				<label for="registrationPsw">Password</label> <input type="password"
-					class="form-control" id="registrationPsw" placeholder="Password">
-			</div>
-			<div class="form-group">
-				<label for="registrationConfirmPsw">Confirm Password</label> <input
-					type="password" class="form-control" id="registrationConfirmPsw"
-					placeholder="Confirm Password">
-			</div>
-			<div class="form-group">
-				<label for="registrationTemplate">Template Name</label> <input
-					id="registrationTemplate" type="text" class="form-control"
-					placeholder="Template Name">
-			</div>
-			<div class="form-group">
-				<label for="registrationLevel">Level</label> <input
-					id="registrationLevel" type="text" class="form-control"
-					placeholder="Level">
-			</div>
-			<div class="form-group">
-				<button id="abortRegistration" type="button" class="btn btn-danger">Cancel</button>
-				<button id="register" type="button" class="btn btn-success">Register</button>
-			</div>
+			<form id="registrationForm" class="form-horizontal">
+				<div class="form-group">
+					<label for="registrationEmailField" class="col-sm-2 control-label">Email
+						address</label>
+					<div id="registrationEmail" class="col-sm-10 input-group">
+						<input id="registrationEmailField" type="email"
+							class="form-control" placeholder="Email"
+							aria-describedby="registrationEmail-addon"> <span
+							class="input-group-addon" id="registrationEmail-addon"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="registrationPsw" class="col-sm-2 control-label">Password</label>
+					<div id="registrationPsw" class="col-sm-10 input-group">
+						<input type="password" class="form-control" placeholder="Password"
+							aria-describedby="registrationPsw-addon"> <span
+							class="input-group-addon" id="registrationPsw-addon"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="registrationConfirmPsw" class="col-sm-2 control-label">Confirm
+						Password</label>
+					<div id="registrationConfirmPsw" class="col-sm-10 input-group">
+						<input type="password" class="form-control"
+							placeholder="Confirm Password"
+							aria-describedby="registrationConfirmPsw-addon"> <span
+							class="input-group-addon" id="registrationConfirmPsw-addon"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="registrationTemplate" class="col-sm-2 control-label">Template
+						Name</label>
+					<div class="col-sm-10 input-group">
+						<select id="registrationTemplate" class="form-control">
+							<option>base</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="registrationLevel" class="col-sm-2 control-label">Level</label>
+					<div class="col-sm-10 input-group">
+						<select id="registrationLevel" class="form-control">
+							<option>3</option>
+							<option>5</option>
+							<option>6</option>
+							<option>7</option>
+							<option>8</option>
+							<option>9</option>
+							<option>10</option>
+							<option>11</option>
+							<option>12</option>
+							<option>13</option>
+							<option>14</option>
+							<option>15</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<button id="abortRegistration" type="button" class="btn btn-danger">Cancel</button>
+					<button id="register" type="submit" class="btn btn-success">Register</button>
+				</div>
+			</form>
 		</div>
 		<hr>
 		<footer>
@@ -122,13 +163,13 @@
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="./js/jquery.min.js"></script>
+	<script src="./js/lodash.min.js"></script>
 	<script src="./bootstrap/js/bootstrap.min.js"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="./js/ie10-viewport-bug-workaround.js"></script>
 	<script src="./js/jquery.blockUI.js"></script>
 	<script src="./js/hda-api.js"></script>
+	<script src="./js/hda-comp.js"></script>
 	<script src="./js/home.js"></script>
-
-
 </body>
 </html>
