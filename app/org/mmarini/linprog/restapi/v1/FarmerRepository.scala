@@ -46,7 +46,7 @@ import javax.inject.Inject
  *
  */
 @Singleton
-class FarmerRepository @Inject() (store: InMemoryFarmerStore) {
+class FarmerRepository @Inject() (store: JdbcFarmerStore) {
 
   def chain(level: Int): Map[String, Product] = SupplyChain.fromClasspath(s"/chain-$level.yaml")
 
