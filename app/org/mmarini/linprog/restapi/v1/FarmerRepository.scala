@@ -40,14 +40,13 @@ import org.mmarini.linprog.SupplyChain
 import org.mmarini.linprog.SupplyChainConf
 
 import javax.inject.Singleton
+import javax.inject.Inject
 
 /**
  *
  */
 @Singleton
-class FarmerRepository {
-
-  private var store: Map[String, Farmer] = Map()
+class FarmerRepository @Inject() (store: InMemoryFarmerStore) {
 
   def chain(level: Int): Map[String, Product] = SupplyChain.fromClasspath(s"/chain-$level.yaml")
 
@@ -80,27 +79,14 @@ class FarmerRepository {
     }
 
   /**  */
-  def put(farmer: Farmer): Future[(Farmer, Boolean)] = Future.successful {
-    // TODO Access MUST be serialized
-    val created = !store.contains(farmer.id)
-    store = store + (farmer.id -> farmer)
-    (farmer, created)
-  }
+  def put(farmer: Farmer): Future[(Farmer, Boolean)] = store.put(farmer)
 
   /**  */
-  def delete(id: String): Future[Option[Farmer]] = Future.successful {
-    // TODO Access MUST be serialized
-    val ret = store.get(id)
-    store = store - id
-    ret
-  }
+  def delete(id: String): Future[Option[Farmer]] = store.delete(id)
 
   /** */
-  def retrieveById(id: String): Future[Option[Farmer]] =
-    Future.successful { store.get(id) }
+  def retrieveById(id: String): Future[Option[Farmer]] = store.retrieveById(id)
 
   /**  */
-  def retrieveByName(name: String): Future[Seq[Farmer]] = Future.successful {
-    store.values.filter(_.name == name).toSeq
-  }
+  def retrieveByName(name: String): Future[Seq[Farmer]] = store.retrieveByName(name)
 }
