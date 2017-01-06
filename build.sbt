@@ -12,8 +12,12 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.2"
 libraryDependencies += "net.jcazevedo" %% "moultingyaml" % "0.3.0"
 libraryDependencies += "org.scalanlp" %% "breeze" % "0.12"
 libraryDependencies += "org.scalanlp" %% "breeze-natives" % "0.12"
-libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14"
+libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
+
+libraryDependencies += ws
 libraryDependencies += jdbc
+
+libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14"
 libraryDependencies += "org.postgresql" % "postgresql" % "9.4.1212"
 //libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.36"
 

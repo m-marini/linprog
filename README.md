@@ -46,3 +46,8 @@ To run continuous test run
 To run just once test run
 
     sbt test
+
+    
+https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile&state=%2Fprofile&redirect_uri=http%3A%2F%2Flocalhost%3A9000%2Foauthcallback&response_type=token&client_id=356010545588-60gdq4m1us25ikg3cudppuaf0qioic1o.apps.googleusercontent.com
+
+http://localhost:9000/oauthcallback#state=/profile&access_token=ya29.Ci_JA2TqmMlTcYeebcQqq3O-t8pgl5fxRmwUunFN0bzcM9vT__Q_lFVv7cYyY6MQwg&token_type=Bearer&expires_in=3600

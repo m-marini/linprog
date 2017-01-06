@@ -48,7 +48,7 @@ import javax.inject.Inject
 @Singleton
 class FarmerRepository @Inject() (store: JdbcFarmerStore) {
 
-  def chain(level: Int): Map[String, Product] = SupplyChain.fromClasspath(s"/chain-$level.yaml")
+  def chain(level: Int): Map[String, Product] = SupplyChain.fromClasspath(s"/chains/chain-$level.yaml")
 
   /** */
   def createSupplierMap(id: String)(implicit ec: ExecutionContext): Future[Option[SupplyChainConf]] =
@@ -64,9 +64,9 @@ class FarmerRepository @Inject() (store: JdbcFarmerStore) {
   def build(template: String, level: Int)(implicit ec: ExecutionContext): Future[Option[Farmer]] =
     Future.successful {
       val ch = chain(level)
-      val values = Parameters.fromClasspath("/max-values.yaml").filter(item => ch.contains(item._1))
+      val values = Parameters.fromClasspath("/chains/max-values.yaml").filter(item => ch.contains(item._1))
       val suppliers = Parameters.
-        fromClasspath(s"/config-$level.yaml").
+        fromClasspath(s"/chains/config-$level.yaml").
         map { case (k, v) => k -> v.toInt }
       val y = ch.values.toList.
         map(x => x.producer).toSet
