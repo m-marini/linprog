@@ -22,9 +22,10 @@ import play.api.mvc.Controller
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.libs.ws.WSRequest
+import com.typesafe.scalalogging.LazyLogging
 
 @Singleton
-class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) extends Controller {
+class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) extends Controller with LazyLogging {
 
   private val AuthorizationServerUrl = "https://www.googleapis.com/oauth2/v4/token"
   private val ClientId = "356010545588-60gdq4m1us25ikg3cudppuaf0qioic1o.apps.googleusercontent.com"
@@ -50,7 +51,7 @@ class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) ex
       newAuthorizationUrl.
       setState("/profile").
       setRedirectUri("http://localhost:9000/oauthcallback").
-      build)
+      build).withNewSession
   }
 
   def logged = Action { request =>
@@ -66,9 +67,10 @@ class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) ex
         withHeaders("authorization" -> auth).
         withQueryString("key" -> "AIzaSyD-a9IF8KKYgoC3cpgS-Al7hLQDbugrDcw")
 
-      println(s"q=${wsReq.queryString}")
       println(s"url=${wsReq.url}")
+      println(s"query=${wsReq.queryString}")
       println(s"headers=${wsReq.headers}")
+      println(s"body=${wsReq.body}")
       //            tk.getClientAuthentication + " " + tk.getAccessToken
       //            "Bearer ya29.CjLKAz59eVLV8kutOzOxgwm5IpJm6jgiuoBKTAx9Ub8UqpM1teu2GJIQpLgxwm9h3gqBnA")
 
@@ -94,7 +96,7 @@ class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) ex
       }
 
     validateRequest.map(msg => Future.successful {
-      Unauthorized(msg)
+      Unauthorized(msg).withNewSession
     }).getOrElse {
       val code = request.getQueryString("code").get
       requestToken(code).map(processTokenResponse)
@@ -105,6 +107,8 @@ class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) ex
 
     def toOkResponse(tokenResponse: TokenResponse) = {
       initFlow.createAndStoreCredential(tokenResponse, "a@a.org")
+      logger.info(s"token=${tokenResponse.getAccessToken}")
+      println(s"token=${tokenResponse.getAccessToken}")
       Redirect("http://localhost:9000/logged").withSession("id" -> "a@a.org")
     }
 
@@ -128,7 +132,7 @@ class LoginController @Inject() (ws: WSClient)(implicit ec: ExecutionContext) ex
         "grant_type" -> Seq("authorization_code")))
 
   private def buildProxyRequest(url: String): WSRequest = {
-    val baseReq = ws.url(AuthorizationServerUrl)
+    val baseReq = ws.url(url)
     val auth = for {
       user <- Option(System.getProperty("http.proxyUser"))
       psw <- Option(System.getProperty("http.proxyPassword"))
