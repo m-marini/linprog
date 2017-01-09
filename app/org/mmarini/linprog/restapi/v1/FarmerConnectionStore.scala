@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS Suppliers (
     val rs = stmt.executeQuery("SHOW TABLES")
     //      val meta = rs.getMetaData
     //      for { i <- 1 to meta.getColumnCount } {
-    //        println(s"$i = ${meta.getColumnName(i)}")
+    //        meta.getColumnName(i)
     //      }
     val list = readResultSet(Seq(), rs)
     val ok = list.exists { case (_, name) => name == "Farmers" }
@@ -246,6 +246,7 @@ WHERE
   }
 
   private def insertValues(farmer: Farmer) {
+    val ValueParmIdx = 4
     val stmt = conn.prepareStatement("INSERT INTO Prices (id,farmerId,name,price) VALUES(?,?,?,?)")
     for {
       (name, value) <- farmer.values
@@ -253,7 +254,7 @@ WHERE
       stmt.setString(1, java.util.UUID.randomUUID.toString)
       stmt.setString(2, farmer.id)
       stmt.setString(3, name)
-      stmt.setDouble(4, value)
+      stmt.setDouble(ValueParmIdx, value)
       stmt.executeUpdate()
     }
   }
@@ -265,6 +266,7 @@ WHERE
   }
 
   private def insertSuppliers(farmer: Farmer) {
+    val ValueParmIdx = 4
     val stmt = conn.prepareStatement("INSERT INTO Suppliers (id,farmerId,name,quantity) VALUES(?,?,?,?)")
     for {
       (name, value) <- farmer.suppliers
@@ -272,18 +274,20 @@ WHERE
       stmt.setString(1, java.util.UUID.randomUUID.toString)
       stmt.setString(2, farmer.id)
       stmt.setString(3, name)
-      stmt.setInt(4, value)
+      stmt.setInt(ValueParmIdx, value)
       stmt.executeUpdate()
     }
   }
 
   private def insertFarmer(farmer: Farmer, token: String, refreshToken: String) {
+    val TokenParmIdx = 4
+    val RefreshTokenParmIdx = 5
     val stmt = conn.prepareStatement("INSERT INTO Farmers (id,name,level,token,refreshToken) VALUES(?,?,?,?,?)")
     stmt.setString(1, farmer.id)
     stmt.setString(2, farmer.name)
     stmt.setInt(3, farmer.level)
-    stmt.setString(4, token)
-    stmt.setString(5, refreshToken)
+    stmt.setString(TokenParmIdx, token)
+    stmt.setString(RefreshTokenParmIdx, refreshToken)
     val n = stmt.executeUpdate()
   }
 

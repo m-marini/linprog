@@ -43,23 +43,10 @@
 			</div>
 
 			<div id="navbar" class="navbar-collapse collapse">
-				<form id="signInForm" class="navbar-form navbar-right">
-					<div class="form-group">
-						<div id="email" class="input-group">
-							<input type="email" class="form-control" placeholder="Email"
-								aria-describedby="email-addon"> <span
-								class="input-group-addon" id="email-addon"></span>
-						</div>
-					</div>
-					<div class="form-group">
-						<div id="psw" class="input-group">
-							<input type="password" class="form-control"
-								placeholder="Password" aria-describedby="psw-addon"> <span
-								class="input-group-addon" id="psw-addon"></span>
-						</div>
-					</div>
-					<button id="signIn" type="submit" class="btn btn-success">Sign
-						in</button>
+				<form id="signInForm" action="login"
+					class="navbar-form navbar-right">
+					<button id="signIn" type="submit" class="btn btn-success">Google
+						Sign In</button>
 				</form>
 			</div>
 			<!--/.nav-collapse -->
@@ -81,77 +68,10 @@
 					target="wiki">linear programming method</a> considering the number
 				of suppliers (animals, machineries) and the price of products.
 			</p>
-			<p class="lead">
-				<button id="newFarmer" type="button" class="btn btn-primary btn-lg">Start
-					new advise</button>
-			</p>
+			<p class="lead">To use you need to sign in with a Google user and
+				authorize the Hay Day Advisor to access your email.</p>
 		</div>
 
-		<div id="registrationPane" class="hda">
-			<h1>Registration</h1>
-			<form id="registrationForm" class="form-horizontal">
-				<div class="form-group">
-					<label for="registrationEmailField" class="col-sm-2 control-label">Email
-						address</label>
-					<div id="registrationEmail" class="col-sm-10 input-group">
-						<input id="registrationEmailField" type="email"
-							class="form-control" placeholder="Email"
-							aria-describedby="registrationEmail-addon"> <span
-							class="input-group-addon" id="registrationEmail-addon"></span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="registrationPsw" class="col-sm-2 control-label">Password</label>
-					<div id="registrationPsw" class="col-sm-10 input-group">
-						<input type="password" class="form-control" placeholder="Password"
-							aria-describedby="registrationPsw-addon"> <span
-							class="input-group-addon" id="registrationPsw-addon"></span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="registrationConfirmPsw" class="col-sm-2 control-label">Confirm
-						Password</label>
-					<div id="registrationConfirmPsw" class="col-sm-10 input-group">
-						<input type="password" class="form-control"
-							placeholder="Confirm Password"
-							aria-describedby="registrationConfirmPsw-addon"> <span
-							class="input-group-addon" id="registrationConfirmPsw-addon"></span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="registrationTemplate" class="col-sm-2 control-label">Template
-						Name</label>
-					<div class="col-sm-10 input-group">
-						<select id="registrationTemplate" class="form-control">
-							<option>base</option>
-						</select>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="registrationLevel" class="col-sm-2 control-label">Level</label>
-					<div class="col-sm-10 input-group">
-						<select id="registrationLevel" class="form-control">
-							<option>3</option>
-							<option>5</option>
-							<option>6</option>
-							<option>7</option>
-							<option>8</option>
-							<option>9</option>
-							<option>10</option>
-							<option>11</option>
-							<option>12</option>
-							<option>13</option>
-							<option>14</option>
-							<option>15</option>
-						</select>
-					</div>
-				</div>
-				<div class="form-group">
-					<button id="abortRegistration" type="button" class="btn btn-danger">Cancel</button>
-					<button id="register" type="submit" class="btn btn-success">Register</button>
-				</div>
-			</form>
-		</div>
 		<hr>
 		<footer>
 			<p>&copy; 2016 Marco Marini</p>
@@ -170,6 +90,6 @@
 	<script src="./js/jquery.blockUI.js"></script>
 	<script src="./js/hda-api.js"></script>
 	<script src="./js/hda-comp.js"></script>
-	<script src="./js/home.js"></script>
+	<script src="./js/index.js"></script>
 </body>
 </html>

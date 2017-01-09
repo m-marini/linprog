@@ -51,7 +51,7 @@ import org.mmarini.linprog.restapi.v1._
 /**
  * The [[FarmerController]] returns an action to handle a specific request
  */
-class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository)(implicit ec: ExecutionContext)
+class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository, s: SecurityAccess)(implicit ec: ExecutionContext)
     extends Controller {
 
   def computeSuppliers(id: String): Action[AnyContent] = action.async {
@@ -102,11 +102,18 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository)(
   /** Creates the action to get a farmer by id */
   def get(id: String): Action[AnyContent] = action.async {
     implicit request =>
-      for {
-        farmerOpt <- repo.retrieveById(id)
-      } yield farmerOpt match {
-        case None => NotFound
-        case Some(farmer) => Ok(Json.toJson(farmerOpt.get))
+      println(s"session=${request.session}")
+      val cr = s.validateUser(request)
+      cr match {
+        case Some((sessId, _)) if (sessId == id) =>
+          for {
+            farmerOpt <- repo.retrieveById(id)
+          } yield farmerOpt match {
+            case None => NotFound
+            case Some(farmer) => Ok(Json.toJson(farmerOpt.get))
+          }
+        case Some((sessId, _)) => Future.successful(Unauthorized(s"Unauthorized $id != $sessId"))
+        case None => Future.successful(Unauthorized(s"Unauthorized $id"))
       }
   }
 

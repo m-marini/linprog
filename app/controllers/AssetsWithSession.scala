@@ -63,56 +63,12 @@ import play.api.mvc.Request
 import org.mmarini.linprog.restapi.v1.SecurityAccess
 
 @Singleton
-class LoginController @Inject() (
-  access: SecurityAccess,
-  configuration: Configuration)(
-    implicit ec: ExecutionContext)
-    extends Controller with LazyLogging {
-
-  private val loggedUrl = configuration.underlying.getString("loginController.loggedUrl")
-
-  /** Creates log in action */
-  def login: Action[AnyContent] = Action { request =>
-
-    access.validateUser(request) match {
-      case Some((id, cr)) => loggedRedirect(id, cr)
-      case None =>
-        // Redirects to Google authorization server
-        Redirect(access.newAuthorizationUrl).withNewSession
-    }
+class AssetsWithSession @Inject() (implicit ec: ExecutionContext)
+    extends Controller {
+  def at(path: String, file: String): Action[AnyContent] = Action.async {
+    req =>
+      val a = Assets.at(path, file)
+      val x = a(req).map { r => r.withSession(req.session) }
+      x
   }
-
-  /** Creates authorized action */
-  def oauthcallback: Action[AnyContent] = Action.async { request =>
-    // Validates authorization code
-    def validateRequest =
-      request.getQueryString("code") match {
-        case None => Some("Missing code")
-        case _ => request.getQueryString("error")
-      }
-
-    validateRequest.map(msg => Future.successful {
-      Unauthorized(msg).withNewSession
-    }).getOrElse {
-      val code = request.getQueryString("code").get
-      access.requestTokenWithCode(code).flatMap {
-        case Some(token) =>
-          access.requestUserinfoWithToken(token.getAccessToken).map {
-            case Some(userinfo) =>
-              val credential = access.storeCredential(userinfo.email, token)
-              loggedRedirect(userinfo.email, credential)
-            case None => Unauthorized("Bho2").withNewSession
-          }
-        case None => Future.successful(Unauthorized("Bho1").withNewSession)
-      }
-    }
-  }
-
-  private def loggedRedirect(id: String, credential: Credential): Result = {
-    val enc = (p: String) => java.net.URLEncoder.encode(p, "utf-8")
-    Redirect(s"$loggedUrl?id=${enc(id)}").withSession(
-      "id" -> id,
-      "tk" -> credential.getAccessToken)
-  }
-
 }

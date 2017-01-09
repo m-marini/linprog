@@ -8,3 +8,4 @@
 /bin/
 /.scalastyle
 /db-file.mv.db
+/.cache-macros
