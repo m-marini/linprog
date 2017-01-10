@@ -48,9 +48,6 @@ trait FarmerStore {
 
   /** */
   def retrieveById(id: String): Future[Option[Farmer]]
-
-  /**  */
-  def retrieveByName(name: String): Future[Seq[Farmer]]
 }
 
 /**
@@ -77,11 +74,5 @@ class JdbcFarmerStore @Inject() (val db: Database) extends FarmerStore with Lazy
   def retrieveById(id: String): Future[Option[Farmer]] =
     Future.successful {
       db.withConnection { conn => new FarmerConnectionStore(conn).retrieveById(id) }
-    }
-
-  /**  */
-  def retrieveByName(name: String): Future[Seq[Farmer]] =
-    Future.successful {
-      db.withConnection { conn => new FarmerConnectionStore(conn).retrieveByName(name) }
     }
 }

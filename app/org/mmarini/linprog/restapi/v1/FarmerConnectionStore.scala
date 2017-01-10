@@ -52,23 +52,20 @@ class FarmerConnectionStore(val conn: Connection) extends LazyLogging {
     val s = conn.createStatement
     s.executeUpdate("""
 CREATE TABLE IF NOT EXISTS Farmers (
-  id VARCHAR(36) NOT NULL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  refreshToken VARCHAR(255) NOT NULL,
+  id VARCHAR(254) NOT NULL PRIMARY KEY,
   level INTEGER NOT NULL
 )""")
     s.executeUpdate("""
 CREATE TABLE IF NOT EXISTS Prices (
   id VARCHAR(36) NOT NULL PRIMARY KEY,
-  farmerId VARCHAR(36) NOT NULL,
+  farmerId VARCHAR(254) NOT NULL,
   name VARCHAR(255) NOT NULL,
   price DECIMAL NOT NULL
 )""")
     s.executeUpdate("""
 CREATE TABLE IF NOT EXISTS Suppliers (
   id VARCHAR(36) NOT NULL PRIMARY KEY,
-  farmerId VARCHAR(36) NOT NULL,
+  farmerId VARCHAR(254) NOT NULL,
   name VARCHAR(255) NOT NULL,
   quantity INTEGER NOT NULL
 )""")
@@ -127,13 +124,9 @@ CREATE TABLE IF NOT EXISTS Suppliers (
   /** */
   def retrieveById(id: String): Option[Farmer] = selectFarmerById(id)
 
-  /**  */
-  def retrieveByName(name: String): Seq[Farmer] = selectFarmersByName(name)
-
   private def selectFarmerById(id: String): Option[Farmer] = {
     val stmt = conn.prepareStatement("""
 SELECT
- name,
  level
 FROM Farmers
 WHERE
@@ -141,48 +134,16 @@ WHERE
     stmt.setString(1, id)
     val rs = stmt.executeQuery()
     if (rs.next()) {
-      val name = rs.getString("name")
       val level = rs.getInt("level")
       val farmer = Farmer(
         id = id,
         level = level,
-        name = name,
         suppliers = selectSuppliers(id),
         values = selectValues(id))
       Some(farmer)
     } else {
       None
     }
-  }
-
-  private def selectFarmersByName(name: String): Seq[Farmer] = {
-    @tailrec
-    def readResultSet(list: Seq[Farmer], rs: ResultSet): Seq[Farmer] =
-      if (!rs.next()) {
-        list
-      } else {
-        val id = rs.getString("id")
-        val level = rs.getInt("level")
-
-        val farmer = Farmer(
-          id = id,
-          level = level,
-          name = name,
-          suppliers = selectSuppliers(id),
-          values = selectValues(id))
-        readResultSet(list :+ farmer, rs)
-      }
-
-    val stmt = conn.prepareStatement("""
-SELECT
- id,
- level
-FROM Farmers
-WHERE
- name=?""")
-    stmt.setString(1, name)
-    val rs = stmt.executeQuery()
-    readResultSet(Seq(), rs)
   }
 
   private def selectValues(farmerId: String): Map[String, Double] = {
@@ -280,22 +241,16 @@ WHERE
   }
 
   private def insertFarmer(farmer: Farmer, token: String, refreshToken: String) {
-    val TokenParmIdx = 4
-    val RefreshTokenParmIdx = 5
-    val stmt = conn.prepareStatement("INSERT INTO Farmers (id,name,level,token,refreshToken) VALUES(?,?,?,?,?)")
+    val stmt = conn.prepareStatement("INSERT INTO Farmers (id,level) VALUES(?,?)")
     stmt.setString(1, farmer.id)
-    stmt.setString(2, farmer.name)
-    stmt.setInt(3, farmer.level)
-    stmt.setString(TokenParmIdx, token)
-    stmt.setString(RefreshTokenParmIdx, refreshToken)
+    stmt.setInt(2, farmer.level)
     val n = stmt.executeUpdate()
   }
 
   private def updateFarmer(farmer: Farmer): Int = {
-    val stmt = conn.prepareStatement("UPDATE Farmers SET name=?,level=? WHERE id=?")
-    stmt.setString(1, farmer.name)
-    stmt.setInt(2, farmer.level)
-    stmt.setString(3, farmer.id)
+    val stmt = conn.prepareStatement("UPDATE Farmers SET level=? WHERE id=?")
+    stmt.setInt(1, farmer.level)
+    stmt.setString(2, farmer.id)
     val n = stmt.executeUpdate()
     n
   }

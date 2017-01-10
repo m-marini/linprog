@@ -63,15 +63,26 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository, 
   }
 
   /** Creates the action to build a new farmer from a template */
-  def build(template: String, level: Int): Action[AnyContent] = action.async {
+  def deleteToken(id: String): Action[AnyContent] = action {
     implicit request =>
-      for {
-        farmerOpt <- repo.build(template, level)
-      } yield {
-        farmerOpt match {
-          case Some(farmer) => Ok(Json.toJson(farmer))
-          case None => NotFound
-        }
+      s.deleteCredential(id)
+      Ok.withNewSession
+  }
+
+  /** Creates the action to build a new farmer from a template */
+  def build(id: String, template: String, level: Int): Action[AnyContent] = action.async {
+    implicit request =>
+      s.validateUser(id, request) match {
+        case Some(_) =>
+          for {
+            farmerOpt <- repo.build(id, template, level)
+          } yield {
+            farmerOpt match {
+              case Some(farmer) => Ok(Json.toJson(farmer))
+              case None => NotFound
+            }
+          }
+        case None => Future.successful(Unauthorized(s"Unauthorized $id"))
       }
   }
 
@@ -103,16 +114,29 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository, 
   def get(id: String): Action[AnyContent] = action.async {
     implicit request =>
       println(s"session=${request.session}")
-      val cr = s.validateUser(request)
-      cr match {
-        case Some((sessId, _)) if (sessId == id) =>
+      s.validateUser(id, request) match {
+        case Some(_) =>
           for {
             farmerOpt <- repo.retrieveById(id)
           } yield farmerOpt match {
             case None => NotFound
             case Some(farmer) => Ok(Json.toJson(farmerOpt.get))
           }
-        case Some((sessId, _)) => Future.successful(Unauthorized(s"Unauthorized $id != $sessId"))
+        case None => Future.successful(Unauthorized(s"Unauthorized $id"))
+      }
+  }
+
+  /** Creates the action to get a farmer by id */
+  def getName(id: String): Action[AnyContent] = action.async {
+    implicit request =>
+      s.validateUser(id, request) match {
+        case Some(credential) =>
+          for {
+            userOpt <- s.requestUserinfoWithToken(credential.getAccessToken)
+          } yield userOpt match {
+            case None => Unauthorized(s"Unauthorized $id")
+            case Some(userinfo) => Ok(Json.toJson(userinfo.name))
+          }
         case None => Future.successful(Unauthorized(s"Unauthorized $id"))
       }
   }
@@ -125,17 +149,6 @@ class FarmerController @Inject() (action: FarmerAction, repo: FarmerRepository, 
         case _ => Ok
       }
   }
-
-  /** Creates the action to find a farmer by name */
-  def find(name: String): Action[AnyContent] = action.async {
-    implicit request =>
-      {
-        for { list <- repo.retrieveByName(name) } yield {
-          Ok(Json.toJson(list))
-        }
-      }
-  }
-
 }
 
 /** FarmerRequest wraps a request of type A adding messages */

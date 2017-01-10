@@ -61,7 +61,7 @@ class FarmerRepository @Inject() (store: JdbcFarmerStore) {
     }
 
   /** Creates a Farmer from a template name */
-  def build(template: String, level: Int)(implicit ec: ExecutionContext): Future[Option[Farmer]] =
+  def build(id: String, template: String, level: Int)(implicit ec: ExecutionContext): Future[Option[Farmer]] =
     Future.successful {
       val ch = chain(level)
       val values = Parameters.fromClasspath("/chains/max-values.yaml").filter(item => ch.contains(item._1))
@@ -71,9 +71,8 @@ class FarmerRepository @Inject() (store: JdbcFarmerStore) {
       val y = ch.values.toList.
         map(x => x.producer).toSet
       Option(Farmer(
-        id = java.util.UUID.randomUUID.toString,
+        id = id,
         level = level,
-        name = "Default",
         suppliers = suppliers,
         values = values))
     }
@@ -86,7 +85,4 @@ class FarmerRepository @Inject() (store: JdbcFarmerStore) {
 
   /** */
   def retrieveById(id: String): Future[Option[Farmer]] = store.retrieveById(id)
-
-  /**  */
-  def retrieveByName(name: String): Future[Seq[Farmer]] = store.retrieveByName(name)
 }

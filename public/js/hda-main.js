@@ -24,11 +24,16 @@ window.MainApp = function(window) {
 	 */
 	function loadPage() {
 
+		hdaApi.getFarmerName(id).then(renderName);
 		hdaApi.getFarmer(id).then(renderPage);
 		hdaApi.getConfig(id).then(renderConfig);
 
+		function renderName(name) {
+			$('#userInfo').html('Signed in as ' + name);
+			return name;
+		}
+
 		function renderPage(data) {
-			$('#userInfo').html('Signed in as ' + data.name);
 			renderMarket(data);
 			renderConf(data);
 			$('#newAdvice').click(loadPage);

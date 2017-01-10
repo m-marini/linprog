@@ -64,7 +64,9 @@ class SecurityAccess @Inject() (ws: WSClient, configuration: Configuration)(impl
   private val accessType = configuration.underlying.getString("securityAccess.accessType")
   private val scopes = configuration.underlying.getStringList("securityAccess.scopes")
 
-  private lazy val dataStoreFactory = new MemoryDataStoreFactory
+  private val dataStoreFactory = new MemoryDataStoreFactory
+
+  println("Init SecurityAccess")
 
   /** Builds initial authorization flow */
   private def initFlow =
@@ -79,23 +81,20 @@ class SecurityAccess @Inject() (ws: WSClient, configuration: Configuration)(impl
       setAccessType(accessType).
       build
 
-  def validateUser(request: Request[AnyContent]): Option[(String, Credential)] = {
-    val idOpt = request.session.get("id")
+  def validateUser(id: String, request: Request[AnyContent]): Option[Credential] = {
     val tkOpt = request.session.get("tk")
-    val idCredOpt = idOpt.flatMap(id => Option(initFlow.loadCredential(id)))
-
-    println(s"idOpt=$idOpt")
-    println(s"idCredOpt=$idCredOpt")
-    println(s"tkOpt=$tkOpt")
-
+    val idCredOpt = Option(initFlow.loadCredential(id))
     for {
-      id <- idOpt
       cr <- idCredOpt
       tk <- tkOpt
       if (tk == cr.getAccessToken)
     } yield {
-      (id, cr)
+      cr
     }
+  }
+
+  def deleteCredential(id: String) {
+    initFlow.getCredentialDataStore.delete(id)
   }
 
   def newAuthorizationUrl: String =

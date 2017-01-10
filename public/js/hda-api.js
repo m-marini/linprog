@@ -72,16 +72,16 @@ window.hdaApi = function(window) {
 
 	return {
 		alert : hdaAlert,
+		createFarmer : createFarmer,
+		deleteToken : deleteToken,
 		getConfig : getConfig,
 		getFarmer : getFarmer,
-		getTemplate : getFarmerTemplate,
+		getFarmerName : getFarmerName,
 		hideAlert : hideAlert,
 		productName : productName,
 		productOrder : productOrder,
 		putFarmer : putFarmer,
-		register : register,
 		send : send,
-		signIn : signIn,
 		supplierName : supplierName,
 		supplierOrder : supplierOrder
 	};
@@ -134,25 +134,12 @@ window.hdaApi = function(window) {
 		hdaAlert(msg);
 	}
 
-	/* Sign in the user */
-	function signIn(user, password) {
-		msg = 'Signing in ...';
-		return getFarmerByName(user).then(checkForSign);
-
-		function checkForSign(list) {
-			if (list.length != 0) {
-				return list[0];
-			} else {
-				var msg = 'User ' + user + ' not found';
-				console.error(msg);
-				hdaAlert(msg);
-				return jQuery.Deferred().reject(msg);
-			}
-		}
+	function getFarmerName(id) {
+		return send('/v1/farmers/' + id + "/name");
 	}
 
 	/* Sign in the user */
-	function register(user, password, template, level) {
+	function register(template, level) {
 		msg = 'Registering ...';
 		return getFarmerByName(user).pipe(checkDuplicate).pipe(createTemplate)
 				.pipe(store);
@@ -178,9 +165,19 @@ window.hdaApi = function(window) {
 		}
 	}
 
+	/* Sign in the user */
+	function createFarmer(id, template, level) {
+		msg = 'Createing farmer ...';
+		return getFarmerByTemplate(id, template, level).pipe(store);
+
+		function store(farmer) {
+			return putFarmer(farmer);
+		}
+	}
+
 	/* Returns the promise of farm template */
-	function getFarmerTemplate(template, level) {
-		return send('/v1/farmers/new?t=' + template + '&l=' + level);
+	function getFarmerByTemplate(id, template, level) {
+		return send('/v1/farmers/' + id + '/new?t=' + template + '&l=' + level);
 	}
 
 	/* Returns the promise of farm */
@@ -189,8 +186,8 @@ window.hdaApi = function(window) {
 	}
 
 	/* Returns the promise of farm */
-	function getFarmerByName(name) {
-		return send('/v1/farmers/?n=' + name);
+	function logoff(id) {
+		return send('/v1/farmers/' + id + '/logoff');
 	}
 
 	/*
@@ -202,6 +199,16 @@ window.hdaApi = function(window) {
 			url : '/v1/farmers/' + farmer.id,
 			contentType : 'application/json; charset=UTF-8',
 			data : JSON.stringify(farmer)
+		}).fail(handleError);
+	}
+
+	/*
+	 * Puts a farmer in the repository. Returns the promise of put farmer
+	 */
+	function deleteToken(id) {
+		return $.ajax({
+			type : 'DELETE',
+			url : '/v1/farmers/' + id + '/token'
 		}).fail(handleError);
 	}
 

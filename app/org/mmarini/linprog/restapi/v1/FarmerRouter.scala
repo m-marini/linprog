@@ -41,12 +41,13 @@ class FarmerRouter @Inject() (
     controller: FarmerController) extends SimpleRouter {
 
   override def routes: Routes = {
-    case GET(p"/" ? q"n=$name") => controller.find(name)
-    case GET(p"/new" ? q"t=$template" & q"l=${ int(level) }") => controller.build(template, level)
     case GET(p"/$id") => controller.get(id)
+    case GET(p"/$id/new" ? q"t=$template" & q"l=${ int(level) }") => controller.build(id, template, level)
+    case GET(p"/$id/name") => controller.getName(id)
     case GET(p"/$id/suppliers") => controller.computeSuppliers(id)
     case PUT(p"/$id") => controller.put(id)
     case DELETE(p"/$id") => controller.delete(id)
+    case DELETE(p"/$id/token") => controller.deleteToken(id)
   }
 
 }

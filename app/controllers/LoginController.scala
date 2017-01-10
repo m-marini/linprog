@@ -72,14 +72,8 @@ class LoginController @Inject() (
   private val loggedUrl = configuration.underlying.getString("loginController.loggedUrl")
 
   /** Creates log in action */
-  def login: Action[AnyContent] = Action { request =>
-
-    access.validateUser(request) match {
-      case Some((id, cr)) => loggedRedirect(id, cr)
-      case None =>
-        // Redirects to Google authorization server
-        Redirect(access.newAuthorizationUrl).withNewSession
-    }
+  def login: Action[AnyContent] = Action {
+    Redirect(access.newAuthorizationUrl).withNewSession
   }
 
   /** Creates authorized action */
@@ -111,7 +105,6 @@ class LoginController @Inject() (
   private def loggedRedirect(id: String, credential: Credential): Result = {
     val enc = (p: String) => java.net.URLEncoder.encode(p, "utf-8")
     Redirect(s"$loggedUrl?id=${enc(id)}").withSession(
-      "id" -> id,
       "tk" -> credential.getAccessToken)
   }
 
